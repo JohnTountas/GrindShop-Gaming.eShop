@@ -1,4 +1,4 @@
-## Task Management Application - (TODO App)
+## Task Management Application - (TODO App).
 
 A modern task management application that demonstrates a clean React front end
 paired with a Node.js + Express API. It supports creating, editing, completing,
