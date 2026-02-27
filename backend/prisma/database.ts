@@ -16,7 +16,7 @@ type DatabaseProduct = {
   stock: number;
 };
 
-type CategorySlang = "Gaming-desktop-pcs" | "Keyboards" | "Mouse" | "Headsets" | "Monitors";
+type CategorySlang = "Gaming-desktop-pc" | "Keyboards" | "Mouse" | "Headsets" | "Monitors";
 
 type ProductsByCategory = Record<CategorySlang, DatabaseProduct[]>;
 
@@ -183,7 +183,7 @@ async function main() {
   const adminPassword = await bcrypt.hash("admin123", 10);
   const admin = await prisma.user.create({
     data: {
-      email: "admin@gamerspot.com",
+      email: "admin@grindspot.com",
       passwordHash: adminPassword,
       role: "ADMIN",
       firstName: "Admin",
@@ -196,7 +196,7 @@ async function main() {
   const userPassword = await bcrypt.hash("user123", 10);
   const user = await prisma.user.create({
     data: {
-      email: "user@gamerspot.com",
+      email: "user@grindspot.com",
       passwordHash: userPassword,
       role: "USER",
       firstName: "User1",
@@ -216,7 +216,7 @@ async function main() {
   // Create categories
   const categories = await Promise.all([
     prisma.category.create({
-      data: { name: "Gaming Desktop PCs", slang: "Gaming-desktop-pcs" },
+      data: { name: "Gaming Desktop PC", slang: "Gaming-desktop-pc" },
     }),
     prisma.category.create({
       data: { name: "Keyboards", slang: "Keyboards" },
@@ -234,7 +234,7 @@ async function main() {
   console.log("\nCategories created:", categories.length);
 
   const productsByCategory: ProductsByCategory = {
-    "Gaming-desktop-pcs": [
+    "Gaming-desktop-pc": [
       {
         title: "Vengeance Rogue-V57 MSI Edition.jpg",
         description:
@@ -729,8 +729,8 @@ async function main() {
 
   console.log("\nDatabase started successfully !");
   console.log("\nLogin credentials:");
-  console.log("Admin: --> admin@gamerspot.com / admin123");
-  console.log("User: --> user@gamerspot.com / user123");
+  console.log("Admin: --> admin@grindspot.com / admin123");
+  console.log("User: --> user@grindspot.com / user123");
 }
 
 main()

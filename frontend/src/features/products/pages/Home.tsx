@@ -39,7 +39,7 @@ const SORT_OPTIONS: Array<{ label: string; value: SortOption }> = [
 
 const SHOWCASE_CATEGORIES = [
   {
-    name: 'Gaming Desktop PCs',
+    name: 'Gaming Desktop PC',
     detail: 'High-performance gaming towers',
     slang: 'Gaming-desktop-pcs',
   },

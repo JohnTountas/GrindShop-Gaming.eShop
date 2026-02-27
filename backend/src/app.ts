@@ -94,7 +94,7 @@ function buildSwaggerDocumentationOptions(serverPort: number) {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "gamerspot E-Shop API",
+        title: "grindspot E-Shop API",
         version: "1.0.0",
         description: "Modern e-commerce API built with Express and TypeScript",
         contact: {
@@ -147,7 +147,7 @@ function registerHealthCheckRoute(expressApplication: Express, healthCheckPath: 
 function registerRootRoute(expressApplication: Express): void {
   expressApplication.get("/", (_request, response) => {
     response.json({
-      name: "gamerspot API",
+      name: "grindspot API",
       status: "online",
       endpoints: {
         health: "/health",

@@ -1,7 +1,7 @@
 {
-  "name": "gamerspot-backend",
+  "name": "grindspot-backend",
   "version": "1.0.0",
-  "description": "gamerspot E-Shop Backend API",
+  "description": "grindspot E-Shop Backend API",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",

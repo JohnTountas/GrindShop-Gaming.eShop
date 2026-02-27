@@ -58,7 +58,7 @@ const PAYMENT_OPTIONS: PaymentOption[] = [
   },
 ];
 
-const FOOTER_MESSAGE_EVENT = 'gamerspot:open-footer-message';
+const FOOTER_MESSAGE_EVENT = 'grindspot:open-footer-message';
 
 // Formats numeric values into EUR currency output for consistent UI pricing.
 function formatCurrency(value: number) {
@@ -242,7 +242,7 @@ function Checkout() {
         title: 'Order placed successfully',
         message: (
           <>
-            Thank you for choosing <strong>GamerSpot</strong>. Your order is confirmed and our team
+            Thank you for choosing <strong>GrindSpot</strong>. Your order is confirmed and our team
             is preparing it for fast dispatch. Payment authorized with:&nbsp;
             <strong>{selectedPaymentOption.label}</strong>.
           </>
@@ -787,7 +787,7 @@ function Checkout() {
                     className={checkboxClass}
                   />
                   <span>
-                    I authorize GamerSpot to charge <strong>{formatCurrency(totalEstimate)}</strong>{' '}
+                    I authorize GrindSpot to charge <strong>{formatCurrency(totalEstimate)}</strong>{' '}
                     using <strong>{selectedPaymentOption.label}</strong>.
                   </span>
                 </label>

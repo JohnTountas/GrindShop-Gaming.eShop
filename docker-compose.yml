@@ -2,18 +2,18 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: gamerspot-db
+    container_name: grindspot-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: gamerspot
-      POSTGRES_PASSWORD: gamerspot_password
-      POSTGRES_DB: gamerspot
+      POSTGRES_USER: grindspot
+      POSTGRES_PASSWORD: grindspot_password
+      POSTGRES_DB: grindspot
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gamerspot"]
+      test: ["CMD-SHELL", "pg_isready -U grindspot"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,13 +22,13 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: gamerspot-backend
+    container_name: grindspot-backend
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://gamerspot:gamerspot_password@postgres:5432/gamerspot
+      DATABASE_URL: postgresql://grindspot:grindspot_password@postgres:5432/grindspot
       JWT_SECRET: your-super-secret-jwt-key-change-in-production
       JWT_REFRESH_SECRET: your-super-secret-refresh-key-change-in-production
       JWT_EXPIRES_IN: 15m
@@ -49,7 +49,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: gamerspot-frontend
+    container_name: grindspot-frontend
     restart: unless-stopped
     environment:
       VITE_API_URL: http://localhost:5050/api

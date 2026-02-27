@@ -1,4 +1,4 @@
-# GamerSpot: Gaming eShop
+# GrindSpot: Gaming eShop
 
 Full-stack gaming e-commerce platform built as a production-style monorepo.
 
@@ -6,7 +6,7 @@ This repository demonstrates end-to-end web development skills across product de
 
 ## Executive Summary
 
-GamerSpot is a complete storefront application with:
+GrindSpot is a complete storefront application with:
 
 - Customer features: Authentication, Catalog browsing, Product detail, Cart, Checkout, Orders, Wishlist, Compare
 - Admin features: Order status operations, Product content management (specifications and reviews), Protected admin dashboard
@@ -71,7 +71,7 @@ GamerSpot is a complete storefront application with:
 ## Architecture Overview.
 
 ```text
-gamerspot/
+grindspot/
 |- backend/
 |  |- prisma/
 |  |- src/
@@ -239,7 +239,7 @@ cd ../frontend && npm install
 Create `backend/.env`:
 
 ```env
-DATABASE_URL=postgresql://gamerspot:gamerspot_password@localhost:5432/gamerspot
+DATABASE_URL=postgresql://grindspot:grindspot_password@localhost:5432/grindspot
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
 JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-in-production
 JWT_EXPIRES_IN=15m
@@ -285,8 +285,8 @@ After `npm run database`:
 
 YOU CAN LOGIN WITH THE CREDENTIALS BELOW:
 
-- Admin: `admin@gamerspot.com` / `admin123`
-- User: `user@gamerspot.com` / `user123`
+- Admin: `admin@grindspot.com` / `admin123`
+- User: `user@grindspot.com` / `user123`
 
 ## Engineering Competencies Demonstrated.
 
@@ -307,4 +307,4 @@ This project showcases my personal skills relevant to software engineer/web deve
 
 ## Project Goal
 
-GamerSpot is designed as a portfolio-project, production-style codebase that demonstrates not only implementation ability, but also architecture clarity, maintainability, and delivery discipline expected in professional software teams.
+GrindSpot is designed as a portfolio-project, production-style codebase that demonstrates not only implementation ability, but also architecture clarity, maintainability, and delivery discipline expected in professional software teams.

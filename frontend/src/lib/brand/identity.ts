@@ -1,11 +1,11 @@
 /**
  * Core brand identity configuration for the gaming storefront experience.
  */
-export const BRAND_NAME = 'GamerSpot';
+export const BRAND_NAME = 'GrindSpot';
 export const BRAND_TAGLINE = 'Power Your Play';
 
 export const BRAND_POSITIONING =
-  'Esports-grade gaming marketplace with verified gear, fast fulfillment, and trusted support.';
+  'The next-gen gaming eShop for curated drops, verified hardware, and lightning-fast fulfillment.';
 
 export const BRAND_COLORS = {
   background: '#060913',

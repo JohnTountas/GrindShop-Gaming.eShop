@@ -16,7 +16,7 @@ export interface ToastPayload {
   actionTo?: string;
 }
 
-const TOAST_EVENT = "gamerspot:toast";
+const TOAST_EVENT = "grindspot:toast";
 
 // Dispatches a typed toast event that can be consumed anywhere in the app shell.
 export function showSuccessMessage(payload: ToastPayload): void {

@@ -9,7 +9,7 @@ import ToastHost from "@/components/feedback/ToastHost";
 import { BRAND_NAME, BRAND_POSITIONING, BRAND_TAGLINE } from "@/lib/brand/identity";
 import { showSuccessMessage } from "@/lib/ui/toast";
 
-const FOOTER_MESSAGE_EVENT = "gamerspot:open-footer-message";
+const FOOTER_MESSAGE_EVENT = "grindspot:open-footer-message";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold tracking-[0.08em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700 ${
@@ -22,7 +22,7 @@ const FOOTER_MESSAGES = {
   helpCenter: {
     section: "Support",
     title: "Help Center",
-    body: "1. Standard Products: Gaming peripherals and accessories may be returned within 7 days of delivery provided the item is unused, original packaging is intact, and proof of purchase is provided. Refunds will be issued to the original payment method unless otherwise agreed. 2. Custom-Built PCs: Custom-built or specially configured desktop systems may not be eligible for return unless defective or damaged upon delivery. 3. Defective Products: If a product is defective, customers must notify Gamerspot within 7 days of delivery. Warranty claims may be handled directly with the manufacturer where applicable.",
+    body: "1. Standard Products: Gaming peripherals and accessories may be returned within 7 days of delivery provided the item is unused, original packaging is intact, and proof of purchase is provided. Refunds will be issued to the original payment method unless otherwise agreed. 2. Custom-Built PCs: Custom-built or specially configured desktop systems may not be eligible for return unless defective or damaged upon delivery. 3. Defective Products: If a product is defective, customers must notify GrindSpot within 7 days of delivery. Warranty claims may be handled directly with the manufacturer where applicable.",
   },
   orderTracking: {
     section: "Support",
@@ -32,7 +32,7 @@ const FOOTER_MESSAGES = {
   contactSupport: {
     section: "Support",
     title: "Contact Support",
-    body: "For inquiries regarding these Terms: •Email: support@gamerspot.com, • Address: www.gamerspot.com, • Phone: 6977664135",
+    body: "For inquiries regarding these Terms: •Email: support@grindspot.com, • Address: www.grindspot.com, • Phone: 6977664135",
   },
   warrantyClaims: {
     section: "Support",
@@ -42,22 +42,22 @@ const FOOTER_MESSAGES = {
   shippingPolicy: {
     section: "Policies",
     title: "Shipping Policy",
-    body: " Delivery timeframes are estimates and not guaranteed. Gamerspot is not responsible for delays caused by: • Shipping carriers, • Customs or import processes, • Incorrect shipping information, • Force majeure events. Risk of loss transfers to the customer upon confirmed delivery.",
+    body: " Delivery timeframes are estimates and not guaranteed. GrindSpot is not responsible for delays caused by: • Shipping carriers, • Customs or import processes, • Incorrect shipping information, • Force majeure events. Risk of loss transfers to the customer upon confirmed delivery.",
   },
   returnsRefunds: {
     section: "Policies",
     title: "Returns & Refunds",
-    body: "1. Standard Products: Gaming peripherals and accessories may be returned within 7 days of delivery provided: The item is unused Original packaging is intact Proof of purchase is provided Refunds will be issued to the original payment method unless otherwise agreed. 2. Custom-Built PCs: Custom-built or specially configured desktop systems may not be eligible for return unless defective or damaged upon delivery. 3. Defective Products: If a product is defective, customers must notify Gamerspot within 7 days of delivery. Warranty claims may be handled directly with the manufacturer where applicable.",
+    body: "1. Standard Products: Gaming peripherals and accessories may be returned within 7 days of delivery provided: The item is unused Original packaging is intact Proof of purchase is provided Refunds will be issued to the original payment method unless otherwise agreed. 2. Custom-Built PCs: Custom-built or specially configured desktop systems may not be eligible for return unless defective or damaged upon delivery. 3. Defective Products: If a product is defective, customers must notify GrindSpot within 7 days of delivery. Warranty claims may be handled directly with the manufacturer where applicable.",
   },
   privacySecurity: {
     section: "Policies",
     title: "Privacy & Policy",
-    body: " Gamerspot respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and purchase products from our platform. By using the Platform, you agree to the terms of this Privacy Policy. We may collect the following categories of information: 1. Personal Information: • Full name, • Billing and shipping address, • Email address, • Phone number, • Payment information (processed securely by third-party providers), • Account login credentials. 2 Order Information: • Products purchased • Order history • Transaction details • Customer service communications. 3 Technical and Usage Data: • IP address, • Browser type and version, • Device information, • Operating system, • Pages visited and browsing behavior, • Cookies and tracking technologies. 4. How We Use Your Information: We use collected information to: • Process and fulfill orders, • Provide customer support, • Manage user accounts, • Communicate order updates and service notices, • Improve website functionality and user experience, • Prevent fraud and unauthorized transactions, • Comply with legal obligations. We do NOT sell personal information to third parties. ",
+    body: " GrindSpot respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and purchase products from our platform. By using the Platform, you agree to the terms of this Privacy Policy. We may collect the following categories of information: 1. Personal Information: • Full name, • Billing and shipping address, • Email address, • Phone number, • Payment information (processed securely by third-party providers), • Account login credentials. 2 Order Information: • Products purchased • Order history • Transaction details • Customer service communications. 3 Technical and Usage Data: • IP address, • Browser type and version, • Device information, • Operating system, • Pages visited and browsing behavior, • Cookies and tracking technologies. 4. How We Use Your Information: We use collected information to: • Process and fulfill orders, • Provide customer support, • Manage user accounts, • Communicate order updates and service notices, • Improve website functionality and user experience, • Prevent fraud and unauthorized transactions, • Comply with legal obligations. We do NOT sell personal information to third parties. ",
   },
   termsOfService: {
     section: "Policies",
     title: "Terms of Service",
-    body: " Welcome to Gamerspot Company. These Terms of Service govern your access to and use of the Gamerspot website, online store, and related services. By accessing or using the Platform and purchasing products from Gamerspot, you agree to be legally bound by these Terms. If you do not agree, you must not use our services. 1. Eligibility: You must be at least 18 years old or the age of majority in your jurisdiction to make purchases on the Platform. By placing an order, you represent and warrant that you meet this requirement. Your use of the Platform is also governed by our Privacy Policy, which describes how we collect, use, and protect personal information.",
+    body: " Welcome to GrindSpot Company. These Terms of Service govern your access to and use of the GrindSpot website, online store, and related services. By accessing or using the Platform and purchasing products from GrindSpot, you agree to be legally bound by these Terms. If you do not agree, you must not use our services. 1. Eligibility: You must be at least 18 years old or the age of majority in your jurisdiction to make purchases on the Platform. By placing an order, you represent and warrant that you meet this requirement. Your use of the Platform is also governed by our Privacy Policy, which describes how we collect, use, and protect personal information.",
   },
 } as const;
 
@@ -92,7 +92,7 @@ function Layout() {
 
     showSuccessMessage({
       title: "Logout successful",
-      message: `See you soon, ${logoutUsername}!`,
+      message: `See you soon, ${logoutUsername}`,
       tone: "success",
     });
 
