@@ -351,6 +351,31 @@ Database UI (host):
 
 After seeding (automatic in Docker, or manual via `npm run database` in local mode):
 
+## Deploy on Render.com (single service: frontend + backend + PostgreSQL)
+
+This repo includes:
+
+- Root `Dockerfile` for full-stack runtime
+- `render.yaml` blueprint for Render web service + persistent disk
+
+Deployment steps:
+
+1. Push the repository to GitHub.
+2. In Render, create a new service using **Blueprint** and select this repo.
+3. Fill required env vars from `render.yaml` with `sync: false`:
+   - `POSTGRES_PASSWORD`
+   - `CORS_ORIGIN` (your Render app URL, e.g. `https://your-app.onrender.com`)
+   - `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` (if used)
+4. Keep disk mount at `/var/data` so PostgreSQL data persists between deploys/restarts.
+5. Deploy.
+
+Render URLs after deploy:
+
+- Frontend: `https://<your-render-service>.onrender.com`
+- API: `https://<your-render-service>.onrender.com/api`
+- Swagger docs: `https://<your-render-service>.onrender.com/docs`
+- Health check: `https://<your-render-service>.onrender.com/health`
+
 ## Engineering Competencies Demonstrated.
 
 This project showcases my personal skills relevant to software engineer/web developer roles:

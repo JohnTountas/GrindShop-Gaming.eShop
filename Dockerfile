@@ -1,4 +1,4 @@
-# IMPORTANT Dockerfile for importint the entire project LIVE on internet through out "Render.com"
+# IMPORTANT FILE: Needs for entire Full Stack App to go LIVE on "Render.com"
 
 FROM node:20-bookworm-slim AS backend-build
 
@@ -8,18 +8,7 @@ COPY backend/package*.json ./
 RUN npm ci
 
 COPY backend/. ./
-
 RUN npm run build
-
-
-
-
-FROM node:20-bookworm-slim AS backend-prod-deps
-
-WORKDIR /app/backend
-
-COPY backend/package*.json ./
-RUN npm ci --omit=dev
 
 
 FROM node:20-bookworm-slim AS frontend-build
@@ -40,35 +29,73 @@ RUN npm run build
 FROM node:20-bookworm-slim AS runtime
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends nginx \
+  && apt-get install -y --no-install-recommends nginx postgresql \
   && rm -rf /var/lib/apt/lists/* \
   && rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf
 
-WORKDIR /app/backend
+WORKDIR /app
 
-COPY backend/package*.json ./
-COPY --from=backend-prod-deps /app/backend/node_modules ./node_modules
-
-# Include Prisma CLI + engines for migrate deploy at runtime.
-COPY --from=backend-build /app/backend/node_modules/prisma ./node_modules/prisma
-COPY --from=backend-build /app/backend/node_modules/@prisma ./node_modules/@prisma
-
-COPY --from=backend-build /app/backend/dist ./dist
-COPY --from=backend-build /app/backend/prisma ./prisma
+COPY --from=backend-build /app/backend /app/backend
 COPY --from=frontend-build /app/frontend/dist /usr/share/nginx/html
 
-RUN mkdir -p /app/backend/uploads
+RUN mkdir -p /app/backend/uploads /var/data/postgres
 
 RUN cat <<'EOF' > /app/start.sh
 #!/bin/sh
 set -e
 
 : "${PORT:=10000}"
+: "${POSTGRES_USER:=grindspot}"
+: "${POSTGRES_PASSWORD:=grindspot_password}"
+: "${POSTGRES_DB:=grindspot}"
+: "${POSTGRES_PORT:=5432}"
+: "${POSTGRES_DATA_DIR:=/var/data/postgres}"
+: "${RUN_MIGRATIONS:=true}"
+: "${AUTO_SEED:=false}"
+
+if [ -z "${DATABASE_URL}" ]; then
+  export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:${POSTGRES_PORT}/${POSTGRES_DB}"
+fi
+
+PG_BIN_DIR="$(dirname "$(find /usr/lib/postgresql -maxdepth 2 -type f -name pg_ctl | sort -V | tail -n 1)")"
+if [ -z "${PG_BIN_DIR}" ] || [ ! -x "${PG_BIN_DIR}/pg_ctl" ]; then
+  echo "PostgreSQL binaries not found."
+  exit 1
+fi
+
+mkdir -p "${POSTGRES_DATA_DIR}"
+chown -R postgres:postgres "${POSTGRES_DATA_DIR}"
+
+if [ ! -f "${POSTGRES_DATA_DIR}/PG_VERSION" ]; then
+  runuser -u postgres -- "${PG_BIN_DIR}/initdb" -D "${POSTGRES_DATA_DIR}" --encoding=UTF8 --locale=C
+fi
+
+runuser -u postgres -- "${PG_BIN_DIR}/pg_ctl" -D "${POSTGRES_DATA_DIR}" -o "-c listen_addresses=127.0.0.1 -p ${POSTGRES_PORT}" -w start
+
+runuser -u postgres -- "${PG_BIN_DIR}/psql" -v ON_ERROR_STOP=1 postgres <<SQL
+DO \$\$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
+    CREATE ROLE "${POSTGRES_USER}" LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+  ELSE
+    ALTER ROLE "${POSTGRES_USER}" WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+  END IF;
+END
+\$\$;
+SELECT 'CREATE DATABASE "${POSTGRES_DB}" OWNER "${POSTGRES_USER}"'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${POSTGRES_DB}') \gexec
+GRANT ALL PRIVILEGES ON DATABASE "${POSTGRES_DB}" TO "${POSTGRES_USER}";
+SQL
 
 cd /app/backend
-if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
-  ./node_modules/.bin/prisma migrate deploy
+if [ "${RUN_MIGRATIONS}" = "true" ]; then
+  npx prisma migrate deploy
 fi
+
+if [ "${AUTO_SEED}" = "true" ]; then
+  npm run database
+fi
+
 PORT=5000 node dist/server.js &
 
 cat > /etc/nginx/conf.d/default.conf <<NGINX
@@ -122,7 +149,7 @@ server {
 }
 NGINX
 
-nginx -g 'daemon off;'
+exec nginx -g 'daemon off;'
 EOF
 RUN chmod +x /app/start.sh
 
