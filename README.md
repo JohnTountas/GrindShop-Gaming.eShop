@@ -1,4 +1,4 @@
-# Project:GrindSpot - Gaming eShop
+# Project: GrindSpot - Gaming eShop
 
 A Full-stack gaming e-commerce platform built as a production-style monorepo.
 
@@ -256,7 +256,7 @@ VITE_API_URL=http://localhost:5000/api
 VITE_STRIPE_PUBLIC_KEY=pk_test_your_stripe_public_key
 ```
 
-### Step 3: Start PostgreSQL - ( You will need to install Docker first)
+### Step 3: Start PostgreSQL - (You will need to install Docker first)
 
 #### On Docker's terminal:
 
