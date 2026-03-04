@@ -58,8 +58,11 @@ if [ -z "${DATABASE_URL}" ]; then
   export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:${POSTGRES_PORT}/${POSTGRES_DB}"
 fi
 
-PG_BIN_DIR="$(dirname "$(find /usr/lib/postgresql -maxdepth 2 -type f -name pg_ctl | sort -V | tail -n 1)")"
-if [ -z "${PG_BIN_DIR}" ] || [ ! -x "${PG_BIN_DIR}/pg_ctl" ]; then
+PG_BIN_DIR="$(dirname "$(find /usr/lib/postgresql -maxdepth 4 -type f -name pg_ctl | sort -V | tail -n 1)")"
+if [ -z "${PG_BIN_DIR}" ] \
+  || [ ! -x "${PG_BIN_DIR}/pg_ctl" ] \
+  || [ ! -x "${PG_BIN_DIR}/initdb" ] \
+  || [ ! -x "${PG_BIN_DIR}/psql" ]; then
   echo "PostgreSQL binaries not found."
   exit 1
 fi
