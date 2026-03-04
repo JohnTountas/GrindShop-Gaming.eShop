@@ -89,7 +89,7 @@ function serveStaticUploads(
 }
 
 // Builds OpenAPI metadata and route scanning options for Swagger generation.
-function buildSwaggerDocumentationOptions(serverPort: number) {
+function buildSwaggerDocumentationOptions() {
   return {
     definition: {
       openapi: "3.0.0",
@@ -103,8 +103,9 @@ function buildSwaggerDocumentationOptions(serverPort: number) {
       },
       servers: [
         {
-          url: `http://localhost:${serverPort}`,
-          description: "Development server",
+          // Relative URL keeps Swagger "Try it out" working behind proxies (Render, Docker, local).
+          url: "/",
+          description: "Current deployment origin",
         },
       ],
       components: {
@@ -124,10 +125,9 @@ function buildSwaggerDocumentationOptions(serverPort: number) {
 // Registers interactive Swagger API documentation endpoints.
 function registerApiDocumentation(
   expressApplication: Express,
-  docsRoutePath: string,
-  serverPort: number
+  docsRoutePath: string
 ): void {
-  const swaggerDocumentationOptions = buildSwaggerDocumentationOptions(serverPort);
+  const swaggerDocumentationOptions = buildSwaggerDocumentationOptions();
   const swaggerSpecification = swaggerJsDoc(swaggerDocumentationOptions);
 
   expressApplication.use(docsRoutePath, swaggerUi.serve, swaggerUi.setup(swaggerSpecification));
@@ -193,8 +193,7 @@ function createExpressApplication(setupConfig: ApplicationSetupConfig): Express 
   );
   registerApiDocumentation(
     expressApplication,
-    setupConfig.routePaths.apiDocs,
-    setupConfig.serverPort
+    setupConfig.routePaths.apiDocs
   );
   registerRootRoute(expressApplication);
   registerHealthCheckRoute(expressApplication, setupConfig.routePaths.healthCheck);
