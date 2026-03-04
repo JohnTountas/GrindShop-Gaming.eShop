@@ -8,8 +8,11 @@ COPY backend/package*.json ./
 RUN npm ci
 
 COPY backend/. ./
+COPY prisma ./prisma
 RUN npx prisma generate
 RUN npm run build
+
+
 
 
 FROM node:20-bookworm-slim AS backend-prod-deps
