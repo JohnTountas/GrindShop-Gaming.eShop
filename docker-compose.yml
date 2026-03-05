@@ -7,13 +7,13 @@ services:
     environment:
       POSTGRES_USER: grindspot
       POSTGRES_PASSWORD: grindspot_password
-      POSTGRES_DB: grindspot
+      POSTGRES_DB: grindspot_DB
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U grindspot -d grindspot"]
+      test: ["CMD-SHELL", "pg_isready -U grindspot -d grindspot_DB"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -28,7 +28,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://grindspot:grindspot_password@postgres:5432/grindspot
+      DATABASE_URL: postgresql://grindspot:grindspot_password@postgres:5432/grindspot_DB
       JWT_SECRET: grindspot-access-token-signing-key-change-me
       JWT_REFRESH_SECRET: grindspot-refresh-token-signing-key-change-me
       JWT_EXPIRES_IN: 15m

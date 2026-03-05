@@ -213,7 +213,36 @@ npm run type-check
 npm run build
 ```
 
-All URLs of the project:
+##
+
+## --------------------------------## Instructions for setup! --------------------------------
+
+### Full Docker mode (frontend + backend + postgres)
+
+1. Install Docker (If it's not already installed).
+
+2. On Docker Navigate into project's folder.
+
+```bash
+#  (OPTIONAL) - Run this once if you had older volumes/config and want a clean DB bootstrap.
+- docker compose down -v
+
+```
+
+3. Run command:
+
+```bash
+- docker compose up --build
+```
+
+4. That's it, The project now is up!
+   On your browser you can use: 'http://localhost:3000' to check the site.
+
+##
+
+### You can also check:
+
+All the URLs that you can check are:
 
 - API root: `http://localhost:5000` -> Shows the root of all API-endpoints.
 - Swagger docs: `http://localhost:5000/docs` -> Verifies auth/cart/orders routes are listed.
@@ -223,158 +252,18 @@ All URLs of the project:
 
 ##
 
-## Instructions for local setup (Step-by-step) !!!
-
-### -------------------------------- WAY 1: --------------------------------
-
-### Prerequisites
-
-Install these tools first:
-
-- Node.js 20+
-- npm 10+
-- Docker (or Docker Desktop)
-
-### Step 1: Install dependencies
-
-```bash
-cd backend && npm install
-cd ../frontend && npm install
-```
-
-### Step 2: Configure environment files
-
-Create `backend/.env`:
-
-```env
-DATABASE_URL=postgresql://grindspot:grindspot_password@localhost:5432/grindspot
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
-JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-in-production
-JWT_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-PORT=5000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:3000
-STRIPE_SECRET_KEY=sk_test_grindspot_secret_key_change_me
-STRIPE_WEBHOOK_SECRET=whsec_grindspot_webhook_secret_change_me
-MAX_FILE_SIZE=5242880
-UPLOAD_DIR=uploads
-```
-
-Create `frontend/.env`:
-
-```env
-VITE_API_URL=http://localhost:5000/api
-VITE_STRIPE_PUBLIC_KEY=pk_test_grindspot_publishable_key_change_me
-```
-
-If you run backend through Docker Compose (host port `5050`), use:
-
-```env
-VITE_API_URL=http://localhost:5050/api
-VITE_STRIPE_PUBLIC_KEY=pk_test_grindspot_publishable_key_change_me
-```
-
-### Step 3: Start PostgreSQL - (You will need to install Docker first)
-
-#### On Docker's terminal:
-
-```bash
-docker compose up -d postgres
-```
-
-### Step 4: Run Prisma migrations and seed data into database.
-
-```bash
-cd backend
-npx prisma migrate deploy
-npm run database
-```
-
-### Step 5: Open database UI (Prisma Studio) - (Optional)
-
-```bash
-cd backend
-npm run studio
-### Database will start automatically at: `http://localhost:5555`
-```
-
-### Step 6: Start backend API - (In a terminal)
-
-```bash
-cd backend
-npm run dev
-
-```
-
-### Step 7: Start frontend app - (In a new terminal)
-
-```bash
-cd frontend
-npm run dev
-```
-
-##
-
-## Default Accounts:
+### Default Accounts:
 
 ### YOU CAN LOGIN WITH THE CREDENTIALS BELOW IF YOU WANT:
 
-### ----------------------------------------------------------
+## ----------------------------------------------------------
 
 - Admin: `admin@grindspot.com` / `admin123`
 - User: `user@grindspot.com` / `user123`
 
-### ----------------------------------------------------------
+## ----------------------------------------------------------
 
 ##
-
-## -------------------------------- WAY 2: --------------------------------
-
-### Full Docker mode (frontend + backend + postgres)
-
-```bash
-# Run this once if you had older volumes/config and want a clean DB bootstrap. (OPTIONAL)
-docker compose down -v
-
-docker compose up --build
-```
-
-`backend` container startup now:
-
-- runs `prisma migrate deploy`
-- seeds database automatically on first run when catalog is empty (`AUTO_SEED=true` in compose)
-
-Database UI (host):
-
-- Prisma Studio: `http://localhost:5555`
-
-After seeding (automatic in Docker, or manual via `npm run database` in local mode):
-
-## Deploy on Render.com (single service: frontend + backend + PostgreSQL)
-
-This repo includes:
-
-- Root `Dockerfile` for full-stack runtime
-- `render.yaml` blueprint for Render web service + persistent disk
-
-Deployment steps:
-
-1. Push the repository to GitHub.
-2. In Render, create a new service using **Blueprint** and select this repo.
-3. Fill required env vars from `render.yaml` with `sync: false`:
-   - `POSTGRES_PASSWORD`
-   - `CORS_ORIGIN` (your Render app URL, e.g. `https://your-app.onrender.com`)
-   - `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` (if used)
-4. Keep disk mount at `/var/data` so PostgreSQL data persists between deploys/restarts.
-5. Deploy.
-
-Render URLs after deploy:
-
-- Frontend: `https://<your-render-service>.onrender.com`
-- API: `https://<your-render-service>.onrender.com/api`
-- Swagger docs: `https://<your-render-service>.onrender.com/docs`
-- Health check: `https://<your-render-service>.onrender.com/health`
 
 ## Engineering Competencies Demonstrated.
 

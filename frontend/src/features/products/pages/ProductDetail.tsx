@@ -1,15 +1,15 @@
 /**
  * Conversion-focused product detail page with persisted wishlist/compare and real specs/reviews.
  */
-import { useMemo, useState } from 'react';
-import type { MouseEvent } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import api from '@/lib/api/client';
-import { Product } from '@/types';
-import { getApiErrorMessage } from '@/lib/api/error';
-import { isAuthenticated } from '@/lib/auth/session';
-import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from '@/lib/ui/toast';
+import { useMemo, useState } from "react";
+import type { MouseEvent } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import api from "@/lib/api/client";
+import { Product } from "@/types";
+import { getApiErrorMessage } from "@/lib/api/error";
+import { isAuthenticated } from "@/lib/auth/session";
+import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from "@/lib/ui/toast";
 import {
   buildReviewSnapshot,
   buildTechnicalSpecs,
@@ -17,7 +17,7 @@ import {
   getProductBrand,
   useCompare,
   useWishlist,
-} from '@/lib/gaming/storefront';
+} from "@/lib/gaming/storefront";
 
 interface ProductsResponse {
   products: Product[];
@@ -25,7 +25,7 @@ interface ProductsResponse {
 
 // Formats numeric values into EUR currency output for consistent UI pricing.
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(value);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR" }).format(value);
 }
 
 // Loads one product, manages interactive purchase actions, and renders deep product context.
@@ -37,25 +37,25 @@ function ProductDetail() {
   const compare = useCompare();
 
   // Local UI feedback + interactive zoom state for the hero image.
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
   const [isLoupeActive, setIsLoupeActive] = useState(false);
   const [loupeOrigin, setLoupeOrigin] = useState({ x: 50, y: 50 });
 
   // Fetch the selected product by route id.
   const productQuery = useQuery({
-    queryKey: ['product', id],
+    queryKey: ["product", id],
     queryFn: async () => (await api.get<Product>(`/products/${id}`)).data,
     enabled: Boolean(id),
   });
 
   // Fetch related products scoped by category once the primary product is ready.
   const relatedQuery = useQuery({
-    queryKey: ['related-products', id, productQuery.data?.category?.slang],
+    queryKey: ["related-products", id, productQuery.data?.category?.slang],
     queryFn: async () => {
       const params = productQuery.data?.category?.slang
         ? { category: productQuery.data.category.slang, limit: 10 }
         : { limit: 10 };
-      return (await api.get<ProductsResponse>('/products', { params })).data.products;
+      return (await api.get<ProductsResponse>("/products", { params })).data.products;
     },
     enabled: Boolean(id && productQuery.data),
   });
@@ -64,17 +64,17 @@ function ProductDetail() {
   const addToCart = useMutation({
     mutationFn: async () => {
       if (!id) {
-        throw new Error('Missing product id');
+        throw new Error("Missing product id");
       }
-      return api.post('/cart/items', { productId: id, quantity: 1 });
+      return api.post("/cart/items", { productId: id, quantity: 1 });
     },
     onSuccess: async () => {
-      showCartAddedToast(productQuery.data?.title ?? 'Product');
-      setStatus(`${productQuery.data?.title ?? 'Item'} added to cart.`);
-      await queryClient.invalidateQueries({ queryKey: ['storefront-state'] });
-      await queryClient.invalidateQueries({ queryKey: ['cart'] });
+      showCartAddedToast(productQuery.data?.title ?? "Product");
+      setStatus(`${productQuery.data?.title ?? "Item"} added to cart.`);
+      await queryClient.invalidateQueries({ queryKey: ["storefront-state"] });
+      await queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
-    onError: (error) => setStatus(getApiErrorMessage(error, 'Failed to add item')),
+    onError: (error) => setStatus(getApiErrorMessage(error, "Failed to add item")),
   });
 
   const product = productQuery.data;
@@ -157,7 +157,7 @@ function ProductDetail() {
       >
         <p className="font-semibold">Unable to load this product</p>
         <p className="mt-1 text-sm">
-          {getApiErrorMessage(productQuery.error, 'Failed to load product')}
+          {getApiErrorMessage(productQuery.error, "Failed to load product")}
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button
@@ -187,20 +187,20 @@ function ProductDetail() {
   // Toggles wishlist membership for the current product after auth checks.
   async function toggleWishlist() {
     if (!isAuthenticated()) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
     try {
       const result = await wishlist.toggle(productId);
       if (result.added) {
-        showWishlistAddedToast(productQuery.data?.title ?? 'Product');
-        setStatus('Added to wishlist.');
+        showWishlistAddedToast(productQuery.data?.title ?? "Product");
+        setStatus("Added to wishlist.");
         return;
       }
-      setStatus('Removed from wishlist.');
+      setStatus("Removed from wishlist.");
     } catch (error) {
-      setStatus(getApiErrorMessage(error, 'Unable to update wishlist'));
+      setStatus(getApiErrorMessage(error, "Unable to update wishlist"));
     }
   }
 
@@ -209,22 +209,22 @@ function ProductDetail() {
     try {
       const result = await compare.toggle(productId);
       if (result.added) {
-        showCompareAddedToast(productQuery.data?.title ?? 'Product');
+        showCompareAddedToast(productQuery.data?.title ?? "Product");
         setStatus(
-          result.reachedLimit ? 'Added to compare. Only 4 products supported.' : 'Added to compare.'
+          result.reachedLimit ? "Added to compare. Only 4 products supported." : "Added to compare."
         );
         return;
       }
-      setStatus('Removed from compare.');
+      setStatus("Removed from compare.");
     } catch (error) {
-      setStatus(getApiErrorMessage(error, 'Unable to update compare list'));
+      setStatus(getApiErrorMessage(error, "Unable to update compare list"));
     }
   }
 
   // Ensures authentication before attempting to add the current product to cart.
   function handleAddToCart() {
     if (!isAuthenticated()) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
     addToCart.mutate();
@@ -273,7 +273,7 @@ function ProductDetail() {
           </p>
           <h1 className="mt-1 text-3xl font-semibold text-primary-900">{product.title}</h1>
           <p className="mt-1 text-sm text-primary-600">
-            {getProductBrand(product)} | {product.category?.name ?? 'Gaming'}
+            {getProductBrand(product)} | {product.category?.name ?? "Gaming"}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -302,17 +302,17 @@ function ProductDetail() {
         <article className="surface-card p-4 lg:col-span-7">
           <div
             className={`product-image-frame loupe-frame relative rounded-2xl border border-primary-300/70 bg-primary-100/68 ${
-              isLoupeActive ? 'is-loupe-active' : ''
+              isLoupeActive ? "is-loupe-active" : ""
             }`}
             role="button"
             tabIndex={0}
-            aria-label={isLoupeActive ? 'Disable image loupe mode' : 'Enable image loupe mode'}
+            aria-label={isLoupeActive ? "Disable image loupe mode" : "Enable image loupe mode"}
             aria-pressed={isLoupeActive}
             onClick={toggleLoupe}
             onMouseMove={handleLoupePointerMove}
             onMouseLeave={handleLoupePointerLeave}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
+              if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
                 toggleLoupe();
               }
@@ -327,11 +327,11 @@ function ProductDetail() {
               }}
             />
 
-            <span className="absolute left-3 top-3 rounded-full border border-primary-300/70 bg-primary-100/82 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-700">
-              {product.category?.name ?? 'Collection'}
+            <span className="absolute left-3 top-3 rounded-full border border-primary-300/55 bg-white/88 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.11em] text-primary-800 shadow-sm backdrop-blur-sm">
+              {product.category?.name ?? "Collection"}
             </span>
-            <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-primary-300/70 bg-primary-100/82 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary-700">
-              {isLoupeActive ? 'Loupe on' : 'Click for loupe'}
+            <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-primary-300/55 bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.11em] text-primary-700 shadow-sm backdrop-blur-sm">
+              {isLoupeActive ? "Zoom on" : "Click for zoom"}
             </span>
           </div>
           <div className="mt-4 flex flex-wrap gap-2 text-xs text-primary-600">
@@ -358,11 +358,11 @@ function ProductDetail() {
               <p
                 className={`rounded-full border px-3 py-1 text-xs font-semibold ${
                   inStock
-                    ? 'border-accent-600/55 bg-accent-600/12 text-accent-600'
-                    : 'border-red-300/70 bg-red-900/25 text-red-100'
+                    ? "border-accent-600/55 bg-accent-600/12 text-accent-600"
+                    : "border-red-300/70 bg-red-900/25 text-red-100"
                 }`}
               >
-                {inStock ? `${product.stock} in stock` : 'Out of stock'}
+                {inStock ? `${product.stock} in stock` : "Out of stock"}
               </p>
             </div>
 
@@ -373,7 +373,7 @@ function ProductDetail() {
                 disabled={addToCart.isPending || !inStock}
                 className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-500 disabled:opacity-60"
               >
-                {addToCart.isPending ? 'Adding...' : inStock ? 'Add to cart' : 'Out of stock'}
+                {addToCart.isPending ? "Adding..." : inStock ? "Add to cart" : "Out of stock"}
               </button>
               <Link
                 to="/checkout"
@@ -389,22 +389,22 @@ function ProductDetail() {
                 onClick={toggleWishlist}
                 className={`catalog-action-button rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
                   wishlisted
-                    ? 'border-accent-700/70 bg-accent-700/18 text-accent-700'
-                    : 'border-primary-400/70 bg-primary-100/72 text-primary-700'
+                    ? "border-accent-700/70 bg-accent-700/18 text-accent-700"
+                    : "border-primary-400/70 bg-primary-100/72 text-primary-700"
                 }`}
               >
-                {wishlisted ? 'Wishlisted' : 'Add to wishlist'}
+                {wishlisted ? "Wishlisted" : "Add to wishlist"}
               </button>
               <button
                 type="button"
                 onClick={toggleCompare}
                 className={`catalog-action-button rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
                   compared
-                    ? 'border-primary-800/80 bg-primary-800/25 text-primary-900'
-                    : 'border-primary-400/70 bg-primary-100/72 text-primary-700'
+                    ? "border-primary-800/80 bg-primary-800/25 text-primary-900"
+                    : "border-primary-400/70 bg-primary-100/72 text-primary-700"
                 }`}
               >
-                {compared ? 'Comparing' : 'Compare'}
+                {compared ? "Comparing" : "Compare"}
               </button>
             </div>
 
@@ -511,7 +511,7 @@ function ProductDetail() {
             disabled={!inStock || addToCart.isPending}
             className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
           >
-            {addToCart.isPending ? 'Adding...' : 'Add to cart'}
+            {addToCart.isPending ? "Adding..." : "Add to cart"}
           </button>
         </div>
       </div>
