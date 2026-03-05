@@ -21,7 +21,7 @@ RUN npm ci
 
 COPY frontend/. ./
 ARG VITE_API_URL=/api
-ARG VITE_STRIPE_PUBLIC_KEY=pk_test_your_stripe_public_key
+ARG VITE_STRIPE_PUBLIC_KEY=pk_test_grindspot_publishable_key_change_me
 ENV VITE_API_URL=${VITE_API_URL}
 ENV VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
 RUN npm run build

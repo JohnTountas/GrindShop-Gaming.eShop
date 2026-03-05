@@ -255,8 +255,8 @@ JWT_REFRESH_EXPIRES_IN=7d
 PORT=5000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:3000
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+STRIPE_SECRET_KEY=sk_test_grindspot_secret_key_change_me
+STRIPE_WEBHOOK_SECRET=whsec_grindspot_webhook_secret_change_me
 MAX_FILE_SIZE=5242880
 UPLOAD_DIR=uploads
 ```
@@ -265,14 +265,14 @@ Create `frontend/.env`:
 
 ```env
 VITE_API_URL=http://localhost:5000/api
-VITE_STRIPE_PUBLIC_KEY=pk_test_your_stripe_public_key
+VITE_STRIPE_PUBLIC_KEY=pk_test_grindspot_publishable_key_change_me
 ```
 
 If you run backend through Docker Compose (host port `5050`), use:
 
 ```env
 VITE_API_URL=http://localhost:5050/api
-VITE_STRIPE_PUBLIC_KEY=pk_test_your_stripe_public_key
+VITE_STRIPE_PUBLIC_KEY=pk_test_grindspot_publishable_key_change_me
 ```
 
 ### Step 3: Start PostgreSQL - (You will need to install Docker first)

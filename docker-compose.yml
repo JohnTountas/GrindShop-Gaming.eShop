@@ -2,7 +2,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: grindspot-db
+    container_name: grindspot-Database
     restart: unless-stopped
     environment:
       POSTGRES_USER: grindspot
@@ -22,7 +22,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: grindspot-backend
+    container_name: grindspot-Backend
     restart: unless-stopped
     depends_on:
       postgres:
@@ -37,7 +37,8 @@ services:
       NODE_ENV: development
       AUTO_SEED: "true"
       CORS_ORIGIN: http://localhost:3000
-      STRIPE_SECRET_KEY: sk_test_your_stripe_secret_key
+      STRIPE_SECRET_KEY: sk_test_grindspot_secret_key_change_me
+      STRIPE_WEBHOOK_SECRET: whsec_grindspot_webhook_secret_change_me
     ports:
       - "5000:5000"
     volumes:
@@ -49,8 +50,8 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: http://localhost:5000/api
-        VITE_STRIPE_PUBLIC_KEY: pk_test_your_stripe_public_key
-    container_name: grindspot-frontend
+        VITE_STRIPE_PUBLIC_KEY: pk_test_grindspot_publishable_key_change_me
+    container_name: grindspot-Frontend
     restart: unless-stopped
     ports:
       - "3000:80"
