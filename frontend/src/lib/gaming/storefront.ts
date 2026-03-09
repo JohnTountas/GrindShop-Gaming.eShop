@@ -31,6 +31,7 @@ type StorefrontToggleResponse = StorefrontState & {
   reachedLimit?: boolean;
 };
 
+// Shared query/storage keys keep storefront state wiring centralized and typo-safe.
 const STOREFRONT_QUERY_KEY = ["storefront-state"];
 const GUEST_COMPARE_STORAGE_KEY = "guestCompareProductIds";
 const TWO_WORD_BRANDS = new Map<string, string>([["cooler master", "Cooler Master"]]);
@@ -191,6 +192,7 @@ export function useCompare() {
       return;
     }
 
+    // Keep guest compare state synchronized across reloads and parallel tabs.
     const syncFromStorage = () => setGuestIds(readGuestCompareIds());
     syncFromStorage();
 
@@ -282,6 +284,7 @@ export function useCompare() {
     isLoading: storefrontQuery.isLoading || toggleMutation.isPending || clearMutation.isPending,
     async toggle(productId: string): Promise<StorefrontToggleResult> {
       if (!authed) {
+        // Guest compare mode uses local state and localStorage instead of the API.
         const exists = guestIds.includes(productId);
         let reachedLimit = false;
         let nextIds: string[];

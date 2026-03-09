@@ -1,5 +1,11 @@
 /**
  * TypeScript database script that creates baseline users, categories, and products.
+ * Environment controls:
+ * - AUTO_SEED=true runs this script from the container entrypoint when products are missing.
+ * - SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD create a production-safe admin account.
+ * - SEED_USER_EMAIL / SEED_USER_PASSWORD optionally create a demo customer account.
+ * - SEED_RESET=true clears catalog-related data before reseeding.
+ * - SEED_RESET_USERS=true also deletes users during a reset run.
  */
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -32,6 +38,18 @@ type SeedReview = {
   comment: string;
   rating: number;
   verifiedPurchase: boolean;
+};
+
+type SeedUserRole = "ADMIN" | "USER";
+
+type SeedUserDefinition = {
+  emailEnvKey: string;
+  passwordEnvKey: string;
+  role: SeedUserRole;
+  firstName: string;
+  lastName: string;
+  loyaltyXp: number;
+  loyaltyLevel: number;
 };
 
 // Validates seeded products are unique and complete for each category.
@@ -76,7 +94,7 @@ function validateUniqueProducts(slang: CategorySlang, products: DatabaseProduct[
 
 // Builds fallback specification rows for seeded catalog products.
 function buildSeedSpecifications(categorySlang: string, title: string): SeedSpecification[] {
-  if (categorySlang === "Gaming-desktop-pcs") {
+  if (categorySlang === "Gaming-desktop-pc") {
     return [
       { label: "CPU", value: "Ryzen 9 / Intel Core i9 Class", position: 0 },
       { label: "GPU", value: "RTX 50 / RX 8000 Series Class", position: 1 },
@@ -160,12 +178,90 @@ function buildSeedReviews(title: string): SeedReview[] {
   ];
 }
 
-// Runs the Prisma seed workflow to reset and repopulate catalog data.
-async function main() {
-  console.log("Starting database ...");
-  const db = prisma as any;
+// Reads a trimmed environment variable and normalizes empty strings to null.
+function getOptionalEnvValue(key: string): string | null {
+  const value = process.env[key]?.trim();
+  return value ? value : null;
+}
 
-  // Phase 1: clear dependent tables first to satisfy FK constraints.
+// Creates or updates an optional seed user when both email and password are provided.
+async function upsertSeedUser(definition: SeedUserDefinition): Promise<string | null> {
+  const email = getOptionalEnvValue(definition.emailEnvKey);
+  const password = getOptionalEnvValue(definition.passwordEnvKey);
+
+  if (!email || !password) {
+    return null;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = await prisma.user.upsert({
+    where: { email },
+    update: {
+      passwordHash,
+      role: definition.role,
+      firstName: definition.firstName,
+      lastName: definition.lastName,
+    },
+    create: {
+      email,
+      passwordHash,
+      role: definition.role,
+      firstName: definition.firstName,
+      lastName: definition.lastName,
+    },
+  });
+
+  await prisma.loyaltyProfile.upsert({
+    where: { userId: user.id },
+    update: {
+      xp: definition.loyaltyXp,
+      level: definition.loyaltyLevel,
+    },
+    create: {
+      userId: user.id,
+      xp: definition.loyaltyXp,
+      level: definition.loyaltyLevel,
+    },
+  });
+
+  console.log(`${definition.role} user seeded: ${user.email}`);
+  return user.email;
+}
+
+// Seeds optional admin and demo users from environment variables.
+async function seedConfiguredUsers(): Promise<string[]> {
+  const seededUsers = await Promise.all([
+    upsertSeedUser({
+      emailEnvKey: "SEED_ADMIN_EMAIL",
+      passwordEnvKey: "SEED_ADMIN_PASSWORD",
+      role: "ADMIN",
+      firstName: "Admin",
+      lastName: "User",
+      loyaltyXp: 2400,
+      loyaltyLevel: 11,
+    }),
+    upsertSeedUser({
+      emailEnvKey: "SEED_USER_EMAIL",
+      passwordEnvKey: "SEED_USER_PASSWORD",
+      role: "USER",
+      firstName: "Demo",
+      lastName: "User",
+      loyaltyXp: 420,
+      loyaltyLevel: 2,
+    }),
+  ]);
+
+  const seededEmails = seededUsers.filter((email): email is string => Boolean(email));
+
+  if (seededEmails.length === 0) {
+    console.log("No seed-user credentials provided. Skipping user seeding.");
+  }
+
+  return seededEmails;
+}
+
+// Clears existing data when an explicit reset seed run is requested.
+async function resetSeedData(db: any): Promise<void> {
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.cartItem.deleteMany();
@@ -177,60 +273,63 @@ async function main() {
   await db.loyaltyProfile.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
-  await prisma.user.deleteMany();
 
-  // Phase 2: seed baseline accounts used by local development and demos.
-  const adminPassword = await bcrypt.hash("admin123", 10);
-  const admin = await prisma.user.create({
-    data: {
-      email: "admin@grindspot.com",
-      passwordHash: adminPassword,
-      role: "ADMIN",
-      firstName: "Admin",
-      lastName: "Tountas",
-    },
-  });
-  console.log("\nAdmin user created:", admin.email);
+  if (process.env.SEED_RESET_USERS === "true") {
+    await prisma.user.deleteMany();
+    console.log("Existing users deleted because SEED_RESET_USERS=true.");
+  }
+}
 
-  const userPassword = await bcrypt.hash("user123", 10);
-  const user = await prisma.user.create({
-    data: {
-      email: "user@grindspot.com",
-      passwordHash: userPassword,
-      role: "USER",
-      firstName: "User1",
-      lastName: "",
-    },
-  });
-  console.log("Regular user created:", user.email);
+// Runs the Prisma seed workflow to reset and repopulate catalog data.
+async function main() {
+  console.log("Starting database ...");
+  const db = prisma as any;
+  const shouldResetData = process.env.SEED_RESET === "true";
 
-  await db.loyaltyProfile.createMany({
-    data: [
-      { userId: admin.id, xp: 2400, level: 11 },
-      { userId: user.id, xp: 420, level: 2 },
-    ],
-  });
-  console.log("Loyalty profiles created: 2");
+  if (shouldResetData) {
+    console.log("SEED_RESET=true. Clearing existing catalog data before seeding.");
+    await resetSeedData(db);
+  }
 
-  // Phase 3: create category taxonomy used by catalog and filtering APIs.
+  const seededUserEmails = await seedConfiguredUsers();
+
+  const existingProductCount = await prisma.product.count();
+  if (existingProductCount > 0) {
+    console.log(
+      `Catalog already exists (products: ${existingProductCount}). Skipping product seed.`
+    );
+    return;
+  }
+
+  // Phase 1: create category taxonomy used by catalog and filtering APIs.
   const categories = await Promise.all([
-    prisma.category.create({
-      data: { name: "Gaming Desktop PC", slang: "Gaming-desktop-pc" },
+    prisma.category.upsert({
+      where: { slang: "Gaming-desktop-pc" },
+      update: { name: "Gaming Desktop PC" },
+      create: { name: "Gaming Desktop PC", slang: "Gaming-desktop-pc" },
     }),
-    prisma.category.create({
-      data: { name: "Keyboards", slang: "Keyboards" },
+    prisma.category.upsert({
+      where: { slang: "Keyboards" },
+      update: { name: "Keyboards" },
+      create: { name: "Keyboards", slang: "Keyboards" },
     }),
-    prisma.category.create({
-      data: { name: "Mouse", slang: "Mouse" },
+    prisma.category.upsert({
+      where: { slang: "Mouse" },
+      update: { name: "Mouse" },
+      create: { name: "Mouse", slang: "Mouse" },
     }),
-    prisma.category.create({
-      data: { name: "Headsets", slang: "Headsets" },
+    prisma.category.upsert({
+      where: { slang: "Headsets" },
+      update: { name: "Headsets" },
+      create: { name: "Headsets", slang: "Headsets" },
     }),
-    prisma.category.create({
-      data: { name: "Monitors", slang: "Monitors" },
+    prisma.category.upsert({
+      where: { slang: "Monitors" },
+      update: { name: "Monitors" },
+      create: { name: "Monitors", slang: "Monitors" },
     }),
   ]);
-  console.log("\nCategories created:", categories.length);
+  console.log("\nCategories ready:", categories.length);
 
   const productsByCategory: ProductsByCategory = {
     "Gaming-desktop-pc": [
@@ -731,9 +830,13 @@ async function main() {
   console.log("Product reviews created:", reviews.length);
 
   console.log("\nDatabase started successfully !");
-  console.log("\nLogin credentials:");
-  console.log("Admin: --> admin@grindspot.com / admin123");
-  console.log("User: --> user@grindspot.com / user123");
+
+  if (seededUserEmails.length > 0) {
+    console.log("\nSeeded user accounts:");
+    seededUserEmails.forEach((email) => {
+      console.log(`- ${email}`);
+    });
+  }
 }
 
 main()

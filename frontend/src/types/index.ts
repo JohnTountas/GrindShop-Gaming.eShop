@@ -1,7 +1,7 @@
 /**
  * Shared frontend domain types aligned with backend API contracts.
  */
-// User types
+// User and authentication contracts mirrored from the backend auth module.
 export interface User {
   id: string;
   email: string;
@@ -28,7 +28,7 @@ export interface AuthResponse {
   accessToken: string;
 }
 
-// Product types
+// Catalog entities used by list/detail pages and admin-facing product editing.
 export interface ProductSpecification {
   id: string;
   productId: string;
@@ -86,7 +86,7 @@ export interface ProductsResponse {
   totalPages: number;
 }
 
-// Category types
+// Category metadata powers filtering and navigation labels.
 export interface Category {
   id: string;
   name: string;
@@ -96,7 +96,7 @@ export interface Category {
   updatedAt?: string;
 }
 
-// Cart types
+// Cart contracts back cart pages, checkout summaries, and quick-add interactions.
 export interface CartItem {
   id: string;
   cartId: string;
@@ -125,7 +125,7 @@ export interface UpdateCartItemData {
   quantity: number;
 }
 
-// Order types
+// Order contracts map directly to checkout, history, and detail experiences.
 export type OrderStatus = 'PENDING' | 'PAID' | 'SHIPPED' | 'CANCELLED';
 
 export interface ShippingAddress {
@@ -169,7 +169,7 @@ export interface OrdersResponse {
   total: number;
 }
 
-// API Error type
+// Common API error envelope used by error helpers and mutation failure states.
 export interface ApiError {
   error: string;
   details?: Array<{

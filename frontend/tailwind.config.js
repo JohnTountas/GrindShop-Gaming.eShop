@@ -3,6 +3,7 @@
  */
 /** @type {import('tailwindcss').Config} */
 export default {
+  // Scan the HTML shell plus all frontend source files for utility usage.
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "media",
   theme: {
@@ -19,6 +20,7 @@ export default {
       },
     },
     extend: {
+      // Typography and token scales intentionally support the premium gaming aesthetic.
       fontFamily: {
         sans: ["Space Grotesk", "Rajdhani", "Segoe UI", "system-ui", "sans-serif"],
         display: ["Rajdhani", "Space Grotesk", "Segoe UI", "system-ui", "sans-serif"],
@@ -56,6 +58,7 @@ export default {
           "0 34px 70px -36px rgba(0, 0, 0, 0.86), 0 0 24px rgba(46, 123, 255, 0.28), 0 0 18px rgba(207, 102, 255, 0.2)",
         neon: "0 0 0 1px rgba(46, 123, 255, 0.5), 0 0 26px rgba(29, 242, 255, 0.4)",
       },
+      // Shared background and motion tokens reduce repeated arbitrary values in components.
       backgroundImage: {
         "grain-gradient":
           "radial-gradient(130% 110% at -12% -10%, rgba(46,123,255,0.24) 0%, rgba(6,9,19,0.92) 42%, rgba(5,11,22,0.98) 100%)",

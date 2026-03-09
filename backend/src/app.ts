@@ -28,7 +28,7 @@ const ROUTE_PATHS = {
 } as const;
 
 const DIRECTORY_PATHS = {
-  uploadsDirectory: "uploads",
+  uploadsDirectory: envConfig.upload.uploadDir,
   frontendDistDirectory: process.env.FRONTEND_DIST_PATH || "",
 } as const;
 
@@ -93,6 +93,11 @@ function serveStaticUploads(
 
 // Builds OpenAPI metadata and route scanning options for Swagger generation.
 function buildSwaggerDocumentationOptions() {
+  const routeDefinitionGlobs = [
+    path.join(process.cwd(), "src/modules/**/*.routes.ts"),
+    path.join(__dirname, "modules/**/*.routes.js"),
+  ];
+
   return {
     definition: {
       openapi: "3.0.0",
@@ -121,7 +126,7 @@ function buildSwaggerDocumentationOptions() {
         },
       },
     },
-    apis: ["./src/modules/**/*.routes.ts"],
+    apis: routeDefinitionGlobs,
   };
 }
 
@@ -219,6 +224,7 @@ function registerNotFoundRoute(expressApplication: Express): void {
 // Builds the fully configured Express application instance.
 function createExpressApplication(setupConfig: ApplicationSetupConfig): Express {
   const expressApplication = express();
+  expressApplication.set("trust proxy", 1);
 
   applySecurityMiddleware(expressApplication, setupConfig.allowedCorsOrigin);
   applyBodyParsingMiddleware(expressApplication);

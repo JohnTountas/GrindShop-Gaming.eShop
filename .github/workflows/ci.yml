@@ -1,3 +1,4 @@
+# Continuous integration for both backend and frontend quality gates.
 name: CI
 
 on:
@@ -11,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      # Ephemeral Postgres container used by Prisma migrations and backend tests.
       postgres:
         image: postgres:16-alpine
         env:
@@ -39,6 +41,7 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
+      # Fail fast on style and static typing issues before integration steps.
       - name: Lint
         working-directory: ./backend
         run: npm run lint
@@ -54,6 +57,7 @@ jobs:
           DIRECT_URL: postgresql://grindspot:grindspot_password@localhost:5432/grindspot_test
         run: npx prisma migrate deploy
 
+      # Backend tests run after the schema is in place.
       - name: Run tests
         working-directory: ./backend
         env:
@@ -81,6 +85,7 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      # Frontend CI verifies style, types, bundle production, and test runtime.
       - name: Lint
         working-directory: ./frontend
         run: npm run lint
