@@ -2,9 +2,14 @@
 # Container entrypoint that applies migrations, optionally seeds data, and starts the API.
 set -e
 
-if [ -z "${DATABASE_URL:-}" ]; then
-  echo "DATABASE_URL is not set. Application cannot start."
+if [ -z "${DATABASE_URL:-}" ] && [ -z "${DIRECT_URL:-}" ]; then
+  echo "DATABASE_URL or DIRECT_URL is not set. Application cannot start."
   exit 1
+fi
+
+if [ -z "${DATABASE_URL:-}" ]; then
+  echo "DATABASE_URL is not set. Using DIRECT_URL."
+  export DATABASE_URL="${DIRECT_URL}"
 fi
 
 if [ -z "${DIRECT_URL:-}" ]; then
@@ -43,7 +48,7 @@ fi
 
 if [ "${AUTO_SEED:-false}" = "true" ]; then
   echo "AUTO_SEED is enabled. Checking whether seed data is required..."
-  PRODUCT_COUNT=$(node -e 'const { PrismaClient } = require("@prisma/client"); const prisma = new PrismaClient(); prisma.product.count().then((count) => { console.log(count); }).catch(() => { console.log("0"); }).finally(() => prisma.$disconnect());')
+  PRODUCT_COUNT=$(node -e 'const { PrismaClient } = require("@prisma/client"); const { PrismaPg } = require("@prisma/adapter-pg"); const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || ""; const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) }); prisma.product.count().then((count) => { console.log(count); }).catch(() => { console.log("0"); }).finally(() => prisma.$disconnect());')
 
   if [ "$PRODUCT_COUNT" = "0" ]; then
     echo "No products found. Running seed script..."

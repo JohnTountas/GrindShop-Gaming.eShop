@@ -22,6 +22,10 @@ FROM node:20 AS backend-builder
 
 WORKDIR /app/backend
 
+# Prisma CLI expects DATABASE_URL during generate; use a safe dummy at build time.
+ARG DATABASE_URL="postgresql://prisma:prisma@localhost:5432/prisma"
+ENV DATABASE_URL=${DATABASE_URL}
+
 # Backend install includes Prisma CLI because runtime migrations use it.
 COPY backend/package*.json ./
 RUN npm ci
@@ -46,6 +50,8 @@ COPY --from=backend-builder /app/backend/package*.json ./
 COPY --from=backend-builder /app/backend/node_modules ./node_modules
 COPY --from=backend-builder /app/backend/dist ./dist
 COPY --from=backend-builder /app/backend/prisma ./prisma
+COPY --from=backend-builder /app/backend/prisma.config.ts ./prisma.config.ts
+COPY --from=backend-builder /app/backend/scripts ./scripts
 COPY --from=backend-builder /app/backend/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY --from=frontend-builder /app/frontend/dist ./frontend-dist
 

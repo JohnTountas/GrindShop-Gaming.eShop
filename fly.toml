@@ -15,6 +15,11 @@ primary_region = "fra"
 [deploy]
   # Run schema migrations before the new release starts receiving traffic.
   release_command = "npm run migrate:deploy"
+  release_command_timeout = "10m"
+
+  [deploy.release_command_vm]
+    size = "shared-cpu-2x"
+    memory = "2gb"
 
 [env]
   # Runtime environment consumed by the backend container.
@@ -34,3 +39,7 @@ primary_region = "fra"
   # Fly routes public HTTPS traffic to the backend process on port 8080.
   internal_port = 8080
   force_https = true
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
