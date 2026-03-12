@@ -1,10 +1,11 @@
-import { BRAND_LOGO_SRC, BRAND_NAME, BRAND_POSITIONING, BRAND_TAGLINE } from '@/shared/brand/identity';
 import {
-  POLICY_FOOTER_LINKS,
-  SUPPORT_FOOTER_LINKS,
-  type FooterMessageKey,
-} from '../constants';
-import FooterLinkSection from './FooterLinkSection';
+  BRAND_LOGO_SRC,
+  BRAND_NAME,
+  BRAND_POSITIONING,
+  BRAND_TAGLINE,
+} from "@/shared/brand/identity";
+import { POLICY_FOOTER_LINKS, SUPPORT_FOOTER_LINKS, type FooterMessageKey } from "../constants";
+import FooterLinkSection from "./FooterLinkSection";
 
 interface LayoutFooterProps {
   currentYear: number;
@@ -42,10 +43,14 @@ function LayoutFooter({ currentYear, onOpenFooterMessage }: LayoutFooterProps) {
           />
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-primary-300/50 pt-4 text-xs font-semibold uppercase tracking-[0.16em] text-primary-600">
-          <p>PCI secured checkout</p>
-          <p>Visa | Mastercard | PayPal | Apple Pay | Google Pay</p>
-          <p>Free returns in 30 days</p>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-accent-700/50 pt-4 text-xs font-semibold uppercase tracking-[0.16em] text-primary-600">
+          <p className="rounded-full border border-accent-700/60 bg-primary-100/70 px-3 py-1 text-accent-700">
+            PCI secured checkout
+          </p>
+          <p>Visa • Mastercard • PayPal • Apple Pay • Google Pay</p>
+          <p className="rounded-full border border-accent-700/60 bg-primary-100/70 px-3 py-1 text-accent-700">
+            Free returns in 30 days
+          </p>
         </div>
 
         <p className="text-right text-xs font-medium text-primary-600">

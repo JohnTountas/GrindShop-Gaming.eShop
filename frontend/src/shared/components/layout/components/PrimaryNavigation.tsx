@@ -1,10 +1,11 @@
-import { NavLink } from 'react-router-dom';
-import type { User } from '@/shared/types';
+import { NavLink } from "react-router-dom";
+import type { User } from "@/shared/types";
 
 interface PrimaryNavigationProps {
   authed: boolean;
   user: User | null;
   displayName: string;
+  cartCountLabel: string;
   wishlistCountLabel: string;
   onLogout: () => void;
   onScrollToTop: () => void;
@@ -14,8 +15,8 @@ interface PrimaryNavigationProps {
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold tracking-[0.08em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700 ${
     isActive
-      ? 'bg-primary-800 text-white shadow-neon'
-      : 'border border-primary-300/60 bg-primary-100/60 text-primary-700 hover:-translate-y-0.5 hover:border-accent-700/60 hover:text-primary-900'
+      ? "bg-primary-800 text-white shadow-neon"
+      : "border border-primary-300/60 bg-primary-100/60 text-primary-700 hover:-translate-y-0.5 hover:border-accent-700/60 hover:text-primary-900"
   }`;
 
 // Renders the main application navigation and account actions inside the shared header.
@@ -23,6 +24,7 @@ function PrimaryNavigation({
   authed,
   user,
   displayName,
+  cartCountLabel,
   wishlistCountLabel,
   onLogout,
   onScrollToTop,
@@ -36,7 +38,15 @@ function PrimaryNavigation({
         Home
       </NavLink>
       <NavLink to="/cart" className={linkClass}>
-        Cart
+        <span className="inline-flex items-center gap-2">
+          <span>Cart</span>
+          <span
+            className="inline-flex min-w-[1.45rem] items-center justify-center rounded-full  border-current/30 bg-white px-1.5 py-0.5 text-[11
+          px] font-bold leading-none text-red-600 shadow-sm"
+          >
+            {cartCountLabel}
+          </span>
+        </span>
       </NavLink>
 
       {authed && (
@@ -49,14 +59,17 @@ function PrimaryNavigation({
         <NavLink to="/wishlist" className={linkClass}>
           <span className="inline-flex items-center gap-2">
             <span>Wishlist</span>
-            <span className="inline-flex min-w-[1.45rem] items-center justify-center rounded-full border border-current/40 px-1.5 py-0.5 text-[10px] font-bold leading-none">
+            <span
+              className="inline-flex min-w-[1.45rem] items-center justify-center rounded-full  border-current/30 bg-white px-1.5 py-0.5 text-[11
+          px] font-bold leading-none text-red-600 shadow-sm"
+            >
               {wishlistCountLabel}
             </span>
           </span>
         </NavLink>
       )}
 
-      {user?.role === 'ADMIN' && (
+      {user?.role === "ADMIN" && (
         <NavLink to="/admin" className={linkClass}>
           Admin
         </NavLink>

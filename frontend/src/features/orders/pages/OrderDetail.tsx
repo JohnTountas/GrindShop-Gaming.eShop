@@ -1,13 +1,13 @@
 /**
  * Order detail page showing shipping info, line items, and totals.
  */
-import { Link, useParams } from 'react-router-dom';
-import { getApiErrorMessage } from '@/shared/api/error';
-import { LoadingOrderDetail } from '../components/LoadingOrderDetail';
-import { ORDER_STATUS_STYLES } from '../constants';
-import { useOrderDetail } from '../hooks/useOrderDetail';
-import { formatCurrency } from '@/shared/utils/formatCurrency';
-import { formatDate } from '../utils/formatDate';
+import { Link, useParams } from "react-router-dom";
+import { getApiErrorMessage } from "@/shared/api/error";
+import { LoadingOrderDetail } from "../components/LoadingOrderDetail";
+import { ORDER_STATUS_STYLES } from "../constants";
+import { useOrderDetail } from "../hooks/useOrderDetail";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
+import { formatDate } from "../utils/formatDate";
 
 // Presents a full order breakdown including shipping, line items, and totals.
 function OrderDetail() {
@@ -25,7 +25,7 @@ function OrderDetail() {
       <div role="alert" className="surface-card border-red-200 bg-red-50 p-5 text-red-800">
         <p className="font-semibold">Unable to load this order</p>
         <p className="mt-1 text-sm">
-          {getApiErrorMessage(orderQuery.error, 'Failed to load order')}
+          {getApiErrorMessage(orderQuery.error, "Failed to load order")}
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button
@@ -52,7 +52,7 @@ function OrderDetail() {
   const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
   const itemSubtotal = order.items.reduce(
     (sum, item) => sum + Number(item.priceAtPurchase) * item.quantity,
-    0,
+    0
   );
 
   return (
@@ -66,7 +66,9 @@ function OrderDetail() {
             >
               Back to orders
             </Link>
-            <h1 className="mt-2 text-3xl font-semibold text-primary-900">Order #{order.id.slice(0, 8)}</h1>
+            <h1 className="mt-2 text-3xl font-semibold text-primary-900">
+              Order #{order.id.slice(0, 8)}
+            </h1>
             <p className="mt-2 text-sm text-primary-600">Placed on {formatDate(order.createdAt)}</p>
           </div>
 
@@ -91,7 +93,7 @@ function OrderDetail() {
               <p className="font-semibold text-primary-900">{order.shippingAddress.fullName}</p>
               <p>{order.shippingAddress.address}</p>
               <p>
-                {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
+                {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
                 {order.shippingAddress.zipCode}
               </p>
               <p>{order.shippingAddress.country}</p>
@@ -146,7 +148,7 @@ function OrderDetail() {
               <div className="flex items-center justify-between">
                 <p>Items</p>
                 <p className="font-semibold text-primary-900">
-                  {itemCount} item{itemCount === 1 ? '' : 's'}
+                  {itemCount} item{itemCount === 1 ? "" : "s"}
                 </p>
               </div>
               <div className="flex items-center justify-between">
@@ -193,5 +195,3 @@ function OrderDetail() {
 }
 
 export default OrderDetail;
-
-

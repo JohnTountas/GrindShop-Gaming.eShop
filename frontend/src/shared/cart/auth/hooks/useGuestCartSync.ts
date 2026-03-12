@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import type { QueryClient } from '@tanstack/react-query';
-import { guestCartHasItems, syncGuestCartToServer } from '@/shared/cart/guestCart';
+import { guestCartHasItems } from '../../guest/guestCartService';
+import { syncGuestCartToServer } from '../syncGuestCartToServer';
 import { showSuccessMessage } from '@/shared/ui/toast';
 
 // Moves persisted guest-cart lines into the server cart immediately after login.

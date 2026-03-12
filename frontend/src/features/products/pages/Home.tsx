@@ -1,14 +1,18 @@
 /**
  * Premium gaming storefront homepage.
  */
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Product } from '@/shared/types';
-import { getApiErrorMessage } from '@/shared/api/error';
-import { addGuestCartItem } from '@/shared/cart/guestCart';
-import { isAuthenticated } from '@/shared/auth/session';
-import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from '@/shared/ui/toast';
-import { BRAND_NAME, BRAND_TAGLINE } from '@/shared/brand/identity';
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Product } from "@/shared/types";
+import { getApiErrorMessage } from "@/shared/api/error";
+import { addGuestCartItem } from "@/shared/cart/guestCart";
+import { isAuthenticated } from "@/shared/auth/session";
+import {
+  showCartAddedToast,
+  showCompareAddedToast,
+  showWishlistAddedToast,
+} from "@/shared/ui/toast";
+import { BRAND_NAME, BRAND_TAGLINE } from "@/shared/brand/identity";
 import {
   buildTechnicalSpecs,
   buildReviewSnapshot,
@@ -16,13 +20,13 @@ import {
   getProductBrand,
   useCompare,
   useWishlist,
-} from '@/shared/storefront/storefront';
-import { SHOWCASE_CATEGORIES, SORT_OPTIONS } from '../constants';
-import { useCategories } from '../hooks/useCategories';
-import { useProductsCatalog } from '../hooks/useProductsCatalog';
-import { useQuickAddToCart } from '../hooks/useQuickAddToCart';
-import type { CategoryWithCount, SortOption } from '../types';
-import { formatCurrency } from '@/shared/utils/formatCurrency';
+} from "@/shared/storefront/storefront";
+import { SHOWCASE_CATEGORIES, SORT_OPTIONS } from "../constants";
+import { useCategories } from "../hooks/useCategories";
+import { useProductsCatalog } from "../hooks/useProductsCatalog";
+import { useQuickAddToCart } from "../hooks/useQuickAddToCart";
+import type { CategoryWithCount, SortOption } from "../types";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 
 // Fallback arrays used while queries are loading or empty.
 const EMPTY_PRODUCTS: Product[] = [];
@@ -32,20 +36,22 @@ const EMPTY_CATEGORIES: CategoryWithCount[] = [];
 function Home() {
   const navigate = useNavigate();
   const location = useLocation();
+  const authed = isAuthenticated();
   const wishlist = useWishlist();
   const compare = useCompare();
 
   // UI controls for filtering, sorting, and quick action feedback.
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('all');
-  const [brand, setBrand] = useState('all');
-  const [compatibility, setCompatibility] = useState('all');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [brand, setBrand] = useState("all");
+  const [compatibility, setCompatibility] = useState("all");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [onlyStock, setOnlyStock] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>('featured');
+  const [sortBy, setSortBy] = useState<SortOption>("featured");
   const [pendingId, setPendingId] = useState<string | null>(null);
-  const [status, setStatus] = useState('');
+  const [pendingAction, setPendingAction] = useState<"add" | "buy" | null>(null);
+  const [status, setStatus] = useState("");
 
   // Base catalog query used by cards, filters, trending, and compare tables.
   const productsQuery = useProductsCatalog();
@@ -78,18 +84,18 @@ function Home() {
     const max = maxPrice ? Number(maxPrice) : undefined;
 
     const filtered = products.filter((product) => {
-      const categoryName = product.category?.name ?? '';
+      const categoryName = product.category?.name ?? "";
       const productBrand = getProductBrand(product);
       const productCompatibility = getCompatibilityTags(product);
       const target =
-        `${product.title} ${product.description} ${categoryName} ${productBrand} ${productCompatibility.join(' ')}`.toLowerCase();
+        `${product.title} ${product.description} ${categoryName} ${productBrand} ${productCompatibility.join(" ")}`.toLowerCase();
 
-      if (category !== 'all' && product.category?.slang !== category) return false;
-      if (brand !== 'all' && productBrand !== brand) return false;
-      if (compatibility !== 'all' && !productCompatibility.includes(compatibility)) return false;
-      if (typeof min === 'number' && Number.isFinite(min) && Number(product.price) < min)
+      if (category !== "all" && product.category?.slang !== category) return false;
+      if (brand !== "all" && productBrand !== brand) return false;
+      if (compatibility !== "all" && !productCompatibility.includes(compatibility)) return false;
+      if (typeof min === "number" && Number.isFinite(min) && Number(product.price) < min)
         return false;
-      if (typeof max === 'number' && Number.isFinite(max) && Number(product.price) > max)
+      if (typeof max === "number" && Number.isFinite(max) && Number(product.price) > max)
         return false;
       if (onlyStock && product.stock <= 0) return false;
       if (query && !target.includes(query)) return false;
@@ -99,12 +105,12 @@ function Home() {
 
     const sorted = [...filtered];
     sorted.sort((a, b) => {
-      if (sortBy === 'price-asc') return Number(a.price) - Number(b.price);
-      if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
-      if (sortBy === 'newest') {
+      if (sortBy === "price-asc") return Number(a.price) - Number(b.price);
+      if (sortBy === "price-desc") return Number(b.price) - Number(a.price);
+      if (sortBy === "newest") {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
-      if (sortBy === 'rating') {
+      if (sortBy === "rating") {
         return (reviewById.get(b.id)?.rating ?? 4) - (reviewById.get(a.id)?.rating ?? 4);
       }
 
@@ -140,17 +146,17 @@ function Home() {
     .filter(Boolean) as Product[];
 
   useEffect(() => {
-    if (location.hash !== '#compare-panel' || compareProducts.length === 0) {
+    if (location.hash !== "#compare-panel" || compareProducts.length === 0) {
       return;
     }
 
-    const comparePanel = document.getElementById('compare-panel');
+    const comparePanel = document.getElementById("compare-panel");
     if (!comparePanel) {
       return;
     }
 
     window.requestAnimationFrame(() => {
-      comparePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      comparePanel.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }, [location.hash, compareProducts.length]);
 
@@ -184,32 +190,32 @@ function Home() {
 
     const coreRows = [
       {
-        label: 'Price',
+        label: "Price",
         values: compareProducts.map((product) => formatCurrency(Number(product.price))),
       },
       {
-        label: 'Category',
-        values: compareProducts.map((product) => product.category?.name ?? 'Collection'),
+        label: "Category",
+        values: compareProducts.map((product) => product.category?.name ?? "Collection"),
       },
       {
-        label: 'Brand',
+        label: "Brand",
         values: compareProducts.map((product) => getProductBrand(product)),
       },
       {
-        label: 'Rating',
+        label: "Rating",
         values: compareProducts.map(
           (product) => `${(reviewById.get(product.id)?.rating ?? 4.7).toFixed(1)} / 5`
         ),
       },
       {
-        label: 'Stock',
+        label: "Stock",
         values: compareProducts.map((product) =>
-          product.stock > 0 ? `${product.stock} available` : 'Out of stock'
+          product.stock > 0 ? `${product.stock} available` : "Out of stock"
         ),
       },
       {
-        label: 'Compatibility',
-        values: compareProducts.map((product) => getCompatibilityTags(product).join(', ')),
+        label: "Compatibility",
+        values: compareProducts.map((product) => getCompatibilityTags(product).join(", ")),
       },
     ];
 
@@ -218,7 +224,7 @@ function Home() {
       .map((label) => ({
         label,
         values: compareProducts.map(
-          (product) => specificationMaps.get(product.id)?.get(label) ?? 'N/A'
+          (product) => specificationMaps.get(product.id)?.get(label) ?? "N/A"
         ),
       }));
 
@@ -228,31 +234,41 @@ function Home() {
   // "Quick add" mutation powers one-click cart actions from product cards.
   const quickAdd = useQuickAddToCart({
     onMutate: (productId) => {
-      setStatus('');
+      setStatus("");
       setPendingId(productId);
     },
     onSuccess: (productId) => {
       const product = products.find((item) => item.id === productId);
-      showCartAddedToast(product?.title ?? 'Product');
-      setStatus(`${product?.title ?? 'Item'} added to cart.`);
+      showCartAddedToast(product?.title ?? "Product");
+      setStatus(
+        pendingAction === "buy"
+          ? `${product?.title ?? "Item"} added to cart. Redirecting to checkout.`
+          : `${product?.title ?? "Item"} added to cart.`
+      );
     },
     onError: (message) => setStatus(message),
-    onSettled: () => setPendingId(null),
+    onSettled: () => {
+      setPendingId(null);
+      setPendingAction(null);
+    },
   });
 
   // Adds to the server cart for members or to local guest storage for visitors.
   function addToCart(product: Product) {
-    if (!isAuthenticated()) {
+    setPendingAction("add");
+
+    if (!authed) {
       try {
-        setStatus('');
+        setStatus("");
         setPendingId(product.id);
         addGuestCartItem(product, 1);
         showCartAddedToast(product.title);
         setStatus(`${product.title} added to cart.`);
       } catch (error) {
-        setStatus(getApiErrorMessage(error, 'Unable to add item to cart'));
+        setStatus(getApiErrorMessage(error, "Unable to add item to cart"));
       } finally {
         setPendingId(null);
+        setPendingAction(null);
       }
       return;
     }
@@ -260,13 +276,8 @@ function Home() {
     quickAdd.mutate(product.id);
   }
 
-  // Enforces authentication then toggles wishlist membership for a product card.
+  // Toggles wishlist membership for a signed-in product card.
   async function toggleWishlist(product: Product) {
-    if (!isAuthenticated()) {
-      navigate('/login');
-      return;
-    }
-
     try {
       const result = await wishlist.toggle(product.id);
       if (result.added) {
@@ -278,7 +289,35 @@ function Home() {
           : `${product.title} removed from wishlist.`
       );
     } catch (error) {
-      setStatus(getApiErrorMessage(error, 'Unable to update wishlist'));
+      setStatus(getApiErrorMessage(error, "Unable to update wishlist"));
+    }
+  }
+
+  // Adds a product to cart and immediately advances to checkout.
+  async function buyNow(product: Product) {
+    setPendingAction("buy");
+
+    if (!authed) {
+      try {
+        setStatus("");
+        setPendingId(product.id);
+        addGuestCartItem(product, 1);
+        showCartAddedToast(product.title);
+        navigate("/checkout");
+      } catch (error) {
+        setStatus(getApiErrorMessage(error, "Unable to start checkout"));
+      } finally {
+        setPendingId(null);
+        setPendingAction(null);
+      }
+      return;
+    }
+
+    try {
+      await quickAdd.mutateAsync(product.id);
+      navigate("/checkout");
+    } catch {
+      // Shared mutation callbacks already surface status messages.
     }
   }
 
@@ -297,20 +336,20 @@ function Home() {
       }
       setStatus(`${product.title} removed from compare.`);
     } catch (error) {
-      setStatus(getApiErrorMessage(error, 'Unable to update compare list'));
+      setStatus(getApiErrorMessage(error, "Unable to update compare list"));
     }
   }
 
   // Restores all catalog controls to their default filter/sort state.
   function resetFilters() {
-    setSearch('');
-    setCategory('all');
-    setBrand('all');
-    setCompatibility('all');
-    setMinPrice('');
-    setMaxPrice('');
+    setSearch("");
+    setCategory("all");
+    setBrand("all");
+    setCompatibility("all");
+    setMinPrice("");
+    setMaxPrice("");
     setOnlyStock(false);
-    setSortBy('featured');
+    setSortBy("featured");
   }
 
   return (
@@ -331,7 +370,7 @@ function Home() {
             <button
               type="button"
               onClick={() =>
-                document.getElementById('catalog-results')?.scrollIntoView({ behavior: 'smooth' })
+                document.getElementById("catalog-results")?.scrollIntoView({ behavior: "smooth" })
               }
               className="rounded-full bg-primary-800 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-neon hover:bg-primary-500"
             >
@@ -486,7 +525,7 @@ function Home() {
               type="checkbox"
               checked={onlyStock}
               onChange={(event) => setOnlyStock(event.target.checked)}
-            />{' '}
+            />{" "}
             In stock only
           </label>
           <select
@@ -549,7 +588,7 @@ function Home() {
                       {product.title}
                     </p>
                     <p className="mt-1 text-xs text-primary-600">
-                      {getCompatibilityTags(product).join(' | ')}
+                      {getCompatibilityTags(product).join(" | ")}
                     </p>
                     <button
                       type="button"
@@ -615,7 +654,7 @@ function Home() {
 
           {productsQuery.isError && (
             <p className="surface-card border border-red-300/70 bg-red-900/20 p-4 text-sm text-red-100">
-              {getApiErrorMessage(productsQuery.error, 'Unable to load products')}
+              {getApiErrorMessage(productsQuery.error, "Unable to load products")}
             </p>
           )}
 
@@ -623,9 +662,11 @@ function Home() {
             <div id="catalog-results" className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
               {visible.map((product) => {
                 const inStock = product.stock > 0;
-                const isWishlisted = wishlist.ids.includes(product.id);
+                const isWishlisted = authed && wishlist.ids.includes(product.id);
                 const isCompared = compare.ids.includes(product.id);
                 const isPending = pendingId === product.id;
+                const isAddPending = isPending && pendingAction === "add";
+                const isBuyPending = isPending && pendingAction === "buy";
                 const review = reviewById.get(product.id);
 
                 return (
@@ -637,7 +678,7 @@ function Home() {
                         className="product-image-zoom h-52 w-full object-cover"
                       />
                       <span className="absolute left-2 top-2 rounded-full border border-primary-300/70 bg-primary-100/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-primary-700">
-                        {product.category?.name ?? 'Collection'}
+                        {product.category?.name ?? "Collection"}
                       </span>
                     </div>
 
@@ -649,7 +690,7 @@ function Home() {
                       {product.description}
                     </p>
                     <p className="mt-1 text-xs text-primary-600">
-                      {getCompatibilityTags(product).join(' | ')}
+                      {getCompatibilityTags(product).join(" | ")}
                     </p>
 
                     <div className="mt-3 flex items-end justify-between">
@@ -657,9 +698,9 @@ function Home() {
                         {formatCurrency(Number(product.price))}
                       </p>
                       <p
-                        className={`rounded-full border px-2 py-1 text-xs font-semibold ${inStock ? 'border-accent-600/55 bg-accent-600/12 text-accent-600' : 'border-red-300/70 bg-red-900/25 text-red-100'}`}
+                        className={`rounded-full border px-2 py-1 text-xs font-semibold ${inStock ? "border-accent-600/55 bg-accent-600/12 text-accent-600" : "border-red-300/70 bg-red-900/25 text-red-100"}`}
                       >
-                        {inStock ? `${product.stock} in stock` : 'Out of stock'}
+                        {inStock ? `${product.stock} in stock` : "Out of stock"}
                       </p>
                     </div>
 
@@ -676,24 +717,35 @@ function Home() {
                         disabled={!inStock || isPending}
                         className="catalog-action-button rounded-xl bg-primary-800 px-3 py-2 text-sm font-semibold text-white disabled:opacity-60"
                       >
-                        {isPending ? 'Adding...' : 'Add to cart'}
+                        {isAddPending ? "Adding..." : "Add to cart"}
                       </button>
                     </div>
 
                     <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                      <button
-                        type="button"
-                        onClick={() => toggleWishlist(product)}
-                        className={`catalog-action-button rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] ${isWishlisted ? 'border-accent-700/70 bg-accent-700/18 text-accent-700' : 'border-primary-400/70 bg-primary-100/72 text-primary-700'}`}
-                      >
-                        {isWishlisted ? 'Wishlisted' : 'Wishlist'}
-                      </button>
+                      {authed ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleWishlist(product)}
+                          className={`catalog-action-button rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] ${isWishlisted ? "border-accent-700/70 bg-accent-700/18 text-accent-700" : "border-primary-400/70 bg-primary-100/72 text-primary-700"}`}
+                        >
+                          {isWishlisted ? "Wishlisted" : "Wishlist"}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => buyNow(product)}
+                          disabled={!inStock || isPending}
+                          className="catalog-action-button rounded-xl border border-primary-400/70 bg-primary-100/72 px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-primary-700 disabled:opacity-60"
+                        >
+                          {isBuyPending ? "Opening checkout..." : "Buy now"}
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => toggleCompare(product)}
-                        className={`catalog-action-button rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] ${isCompared ? 'border-primary-800/80 bg-primary-800/25 text-primary-900' : 'border-primary-400/70 bg-primary-100/72 text-primary-700'}`}
+                        className={`catalog-action-button rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] ${isCompared ? "border-primary-800/80 bg-primary-800/25 text-primary-900" : "border-primary-400/70 bg-primary-100/72 text-primary-700"}`}
                       >
-                        {isCompared ? 'Comparing' : 'Compare'}
+                        {isCompared ? "Comparing" : "Compare"}
                       </button>
                     </div>
                   </article>
@@ -712,13 +764,13 @@ function Home() {
           Built for conversion and customer confidence
         </h2>
         <div className="mt-3 grid gap-2 sm:grid-cols-3">
-          <p className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3 text-sm font-semibold text-primary-900">
-            4.8/5 verified ratings
+          <p className="rounded-2xl border border-accent-700 bg-primary-100/70 p-3 text-sm font-semibold text-accent-700">
+            4.8 / 5 verified ratings
           </p>
-          <p className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3 text-sm font-semibold text-primary-900">
+          <p className="rounded-2xl border border-accent-700/60 bg-primary-100/70 p-3 text-sm font-semibold text-accent-700">
             Secure encrypted checkout
           </p>
-          <p className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3 text-sm font-semibold text-primary-900">
+          <p className="rounded-2xl border border-accent-700/60 bg-primary-100/70 p-3 text-sm font-semibold text-accent-700">
             30-day returns
           </p>
         </div>
@@ -728,5 +780,3 @@ function Home() {
 }
 
 export default Home;
-
-

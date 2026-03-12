@@ -7,7 +7,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getApiErrorMessage } from "@/shared/api/error";
 import { addGuestCartItem } from "@/shared/cart/guestCart";
 import { isAuthenticated } from "@/shared/auth/session";
-import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from "@/shared/ui/toast";
+import {
+  showCartAddedToast,
+  showCompareAddedToast,
+  showWishlistAddedToast,
+} from "@/shared/ui/toast";
 import {
   buildReviewSnapshot,
   buildTechnicalSpecs,
@@ -31,6 +35,7 @@ function ProductDetail() {
 
   // Local UI feedback + interactive zoom state for the hero image.
   const [status, setStatus] = useState("");
+  const [pendingAction, setPendingAction] = useState<"add" | "buy" | null>(null);
   const [isLoupeActive, setIsLoupeActive] = useState(false);
   const [loupeOrigin, setLoupeOrigin] = useState({ x: 50, y: 50 });
 
@@ -42,9 +47,14 @@ function ProductDetail() {
   const addToCart = useQuickAddToCart({
     onSuccess: () => {
       showCartAddedToast(productQuery.data?.title ?? "Product");
-      setStatus(`${productQuery.data?.title ?? "Item"} added to cart.`);
+      setStatus(
+        pendingAction === "buy"
+          ? `${productQuery.data?.title ?? "Item"} added to cart. Redirecting to checkout.`
+          : `${productQuery.data?.title ?? "Item"} added to cart.`
+      );
     },
     onError: (message) => setStatus(message),
+    onSettled: () => setPendingAction(null),
   });
 
   const product = productQuery.data;
@@ -150,17 +160,15 @@ function ProductDetail() {
 
   const inStock = product.stock > 0;
   const productId = product.id;
-  const wishlisted = wishlist.ids.includes(productId);
+  const wishlisted = authed && wishlist.ids.includes(productId);
   const compared = compare.ids.includes(productId);
   const compatibility = getCompatibilityTags(product);
+  const isAddingToCart = pendingAction === "add" && (!authed || addToCart.isPending);
+  const isBuyingNow = pendingAction === "buy" && (!authed || addToCart.isPending);
+  const isCartActionPending = isAddingToCart || isBuyingNow;
 
-  // Toggles wishlist membership for the current product after auth checks.
+  // Toggles wishlist membership for the current signed-in product.
   async function toggleWishlist() {
-    if (!isAuthenticated()) {
-      navigate("/login");
-      return;
-    }
-
     try {
       const result = await wishlist.toggle(productId);
       if (result.added) {
@@ -196,6 +204,7 @@ function ProductDetail() {
     if (!product) {
       return;
     }
+    setPendingAction("add");
     if (!authed) {
       try {
         addGuestCartItem(product, 1);
@@ -203,10 +212,40 @@ function ProductDetail() {
         setStatus(`${product.title} added to cart.`);
       } catch (error) {
         setStatus(getApiErrorMessage(error, "Failed to add item"));
+      } finally {
+        setPendingAction(null);
       }
       return;
     }
     addToCart.mutate(product.id);
+  }
+
+  // Adds the current product to cart and advances directly to checkout.
+  async function handleBuyNow() {
+    if (!product) {
+      return;
+    }
+
+    setPendingAction("buy");
+
+    if (!authed) {
+      try {
+        addGuestCartItem(product, 1);
+        showCartAddedToast(product.title);
+        navigate("/checkout");
+      } catch (error) {
+        setStatus(getApiErrorMessage(error, "Unable to start checkout"));
+        setPendingAction(null);
+      }
+      return;
+    }
+
+    try {
+      await addToCart.mutateAsync(product.id);
+      navigate("/checkout");
+    } catch {
+      // Shared mutation callbacks already surface status messages.
+    }
   }
 
   // Toggles image loupe mode so users can inspect product details closely.
@@ -306,10 +345,10 @@ function ProductDetail() {
               }}
             />
 
-            <span className="absolute left-3 top-3 rounded-full border border-primary-300/50 bg-white/88 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.11em] text-primary-800 shadow-sm backdrop-blur-sm">
+            <span className="absolute left-3 top-3 rounded-full border border-primary-300/50  px-2.5 py-1 text-[12px] font-bold uppercase tracking-[0.11em] text-blue-700 shadow-sm bg-slate-100">
               {product.category?.name ?? "Collection"}
             </span>
-            <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-primary-300/55 bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.11em] text-primary-700 shadow-sm">
+            <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-primary-300/55 bg-slate-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.11em] text-blue-700 shadow-sm">
               {isLoupeActive ? "Zoom on" : "Click for Zoom"}
             </span>
           </div>
@@ -349,31 +388,35 @@ function ProductDetail() {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                disabled={addToCart.isPending || !inStock}
+                disabled={isCartActionPending || !inStock}
                 className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-500 disabled:opacity-60"
               >
-                {addToCart.isPending ? "Adding..." : inStock ? "Add to cart" : "Out of stock"}
+                {isAddingToCart ? "Adding..." : inStock ? "Add to cart" : "Out of stock"}
               </button>
-              <Link
-                to="/checkout"
-                className="rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-2.5 text-center text-sm font-semibold text-primary-800"
-              >
-                Buy now
-              </Link>
-            </div>
-
-            <div className="grid gap-2 sm:grid-cols-2">
               <button
                 type="button"
-                onClick={toggleWishlist}
-                className={`catalog-action-button rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
-                  wishlisted
-                    ? "border-accent-700/70 bg-accent-700/18 text-accent-700"
-                    : "border-primary-400/70 bg-primary-100/72 text-primary-700"
-                }`}
+                onClick={handleBuyNow}
+                disabled={isCartActionPending || !inStock}
+                className="rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-2.5 text-center text-sm font-semibold text-primary-800 disabled:opacity-60"
               >
-                {wishlisted ? "Wishlisted" : "Add to wishlist"}
+                {isBuyingNow ? "Opening checkout..." : "Buy now"}
               </button>
+            </div>
+
+            <div className={`grid gap-2 ${authed ? "sm:grid-cols-2" : ""}`}>
+              {authed && (
+                <button
+                  type="button"
+                  onClick={toggleWishlist}
+                  className={`catalog-action-button rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                    wishlisted
+                      ? "border-accent-700/70 bg-accent-700/18 text-accent-700"
+                      : "border-primary-400/70 bg-primary-100/72 text-primary-700"
+                  }`}
+                >
+                  {wishlisted ? "Wishlisted" : "Add to wishlist"}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={toggleCompare}
@@ -388,7 +431,7 @@ function ProductDetail() {
             </div>
 
             <div className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3 text-xs font-semibold uppercase tracking-[0.14em] text-primary-600">
-              Visa | Mastercard | PayPal | Apple Pay | Google Pay
+              Visa • Mastercard • PayPal • Apple Pay • Google Pay
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary-600">
               <p className="rounded-full border border-primary-300/70 bg-primary-100/70 px-3 py-1">
@@ -487,10 +530,18 @@ function ProductDetail() {
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={!inStock || addToCart.isPending}
+            disabled={!inStock || isCartActionPending}
             className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
           >
-            {addToCart.isPending ? "Adding..." : "Add to cart"}
+            {isAddingToCart ? "Adding..." : "Add to cart"}
+          </button>
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            disabled={!inStock || isCartActionPending}
+            className="catalog-action-button rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-2 text-sm font-semibold text-primary-800 disabled:opacity-60"
+          >
+            {isBuyingNow ? "Checkout..." : "Buy now"}
           </button>
         </div>
       </div>
@@ -499,5 +550,3 @@ function ProductDetail() {
 }
 
 export default ProductDetail;
-
-

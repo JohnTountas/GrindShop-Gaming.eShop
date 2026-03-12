@@ -1,22 +1,9 @@
 /**
  * Mutation hook for updating cart item quantities.
  */
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateCartItem as updateCartItemApi } from '../api/cart';
-import { cartKey } from '../queryKeys';
-import { readGuestCart, updateGuestCartItem } from '@/shared/cart/guestCart';
-import { getApiErrorMessage } from '@/shared/api/error';
-import type { Cart } from '@/shared/types';
-
-// Options for reacting to cart-item update lifecycle events.
-interface UseUpdateCartItemOptions {
-  authed: boolean;
-  onGuestCartUpdated?: (cart: Cart) => void;
-  onMutate?: (itemId: string) => void;
-  onSuccess?: () => void;
-  onError?: (message: string) => void;
-  onSettled?: () => void;
-}
+import { useAuthenticatedUpdateCartItem } from './auth/useAuthenticatedUpdateCartItem';
+import { useGuestUpdateCartItem } from './guest/useGuestUpdateCartItem';
+import type { UseUpdateCartItemOptions } from './types';
 
 // React Query mutation hook to update a cart item's quantity.
 export function useUpdateCartItem({
@@ -27,32 +14,20 @@ export function useUpdateCartItem({
   onError,
   onSettled,
 }: UseUpdateCartItemOptions) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (payload: { itemId: string; quantity: number }) => {
-      if (!authed) {
-        return updateGuestCartItem(payload.itemId, payload.quantity);
-      }
-      return updateCartItemApi(payload.itemId, payload.quantity);
-    },
-    onMutate: (payload) => {
-      onMutate?.(payload.itemId);
-    },
-    onSuccess: async () => {
-      if (authed) {
-        await queryClient.invalidateQueries({ queryKey: cartKey });
-      } else {
-        onGuestCartUpdated?.(readGuestCart());
-      }
-      onSuccess?.();
-    },
-    onError: (error) => {
-      onError?.(getApiErrorMessage(error, 'Unable to update cart item'));
-    },
-    onSettled: () => {
-      onSettled?.();
-    },
+  const authenticatedMutation = useAuthenticatedUpdateCartItem({
+    onMutate,
+    onSuccess,
+    onError,
+    onSettled,
   });
+  const guestMutation = useGuestUpdateCartItem({
+    onGuestCartUpdated,
+    onMutate,
+    onSuccess,
+    onError,
+    onSettled,
+  });
+
+  return authed ? authenticatedMutation : guestMutation;
 }
 

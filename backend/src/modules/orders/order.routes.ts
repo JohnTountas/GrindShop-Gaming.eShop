@@ -3,15 +3,12 @@
  */
 import { Router } from 'express';
 import * as orderController from './order.controller';
-import { authenticate, authorize } from '../../middleware/auth.middleware';
+import { authenticate, authorize, optionalAuthenticate } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { createOrderSchema, updateOrderStatusSchema, getOrderSchema } from './order.dto';
 
 // Express router for customer order endpoints.
 const router = Router();
-
-// All order routes require authentication.
-router.use(authenticate);
 
 /**
  * @swagger
@@ -34,7 +31,10 @@ router.use(authenticate);
  *       201:
  *         description: Order created
  */
-router.post('/', validate(createOrderSchema), orderController.createOrder);
+router.post('/', optionalAuthenticate, validate(createOrderSchema), orderController.createOrder);
+
+// Order history and detail routes remain authenticated.
+router.use(authenticate);
 
 /**
  * @swagger

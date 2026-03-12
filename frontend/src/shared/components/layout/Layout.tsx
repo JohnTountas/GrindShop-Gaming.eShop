@@ -4,6 +4,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { clearSession, getStoredUser, isAuthenticated } from '@/shared/auth/session';
+import { useCartData } from '@/features/cart/hooks/useCartData';
 import ToastHost from '@/shared/components/feedback/ToastHost';
 import { useWishlist } from '@/shared/storefront/storefront';
 import { showSuccessMessage } from '@/shared/ui/toast';
@@ -11,16 +12,19 @@ import LayoutFooter from './components/LayoutFooter';
 import LayoutHeader from './components/LayoutHeader';
 import FooterMessageModal from './components/FooterMessageModal';
 import { useFooterMessageDialog } from './hooks/useFooterMessageDialog';
-import { useGuestCartSync } from './hooks/useGuestCartSync';
 import { useHeaderVisibility } from './hooks/useHeaderVisibility';
+import { useGuestCartSync } from '@/shared/cart/auth/hooks/useGuestCartSync';
 
 function Layout() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const authed = isAuthenticated();
   const user = getStoredUser();
+  const { cart } = useCartData();
   const currentYear = new Date().getFullYear();
   const wishlist = useWishlist();
+  const cartCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+  const cartCountLabel = cartCount > 99 ? '99+' : `${cartCount}`;
   const wishlistCountLabel = wishlist.ids.length > 99 ? '99+' : `${wishlist.ids.length}`;
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
   const isHeaderVisible = useHeaderVisibility();
@@ -67,6 +71,7 @@ function Layout() {
         authed={authed}
         user={user}
         displayName={displayName}
+        cartCountLabel={cartCountLabel}
         isHeaderVisible={isHeaderVisible}
         wishlistCountLabel={wishlistCountLabel}
         onLogout={handleLogout}

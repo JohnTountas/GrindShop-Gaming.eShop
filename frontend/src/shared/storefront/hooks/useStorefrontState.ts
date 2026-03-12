@@ -1,15 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
 import { isAuthenticated } from '@/shared/auth/session';
-import { fetchStorefrontState } from '../api/storefrontApi';
-import { storefrontStateKey } from '../queryKeys';
+import { defaultStorefrontState } from '../constants';
+import { useAuthenticatedStorefrontState } from '../auth/hooks/useAuthenticatedStorefrontState';
 
 export function useStorefrontState() {
   const authed = isAuthenticated();
+  const storefrontQuery = useAuthenticatedStorefrontState(authed);
 
-  return useQuery({
-    queryKey: storefrontStateKey,
-    queryFn: fetchStorefrontState,
-    enabled: authed,
-    staleTime: 30_000,
-  });
+  return {
+    ...storefrontQuery,
+    data: authed ? storefrontQuery.data : defaultStorefrontState,
+    isLoading: authed ? storefrontQuery.isLoading : false,
+    isError: authed ? storefrontQuery.isError : false,
+  };
 }

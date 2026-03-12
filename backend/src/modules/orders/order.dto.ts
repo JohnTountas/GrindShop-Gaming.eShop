@@ -16,6 +16,15 @@ export const createOrderSchema = z.object({
       phone: z.string().min(1, 'Phone is required'),
     }),
     paymentIntentId: z.string().optional(), // For Stripe integration
+    guestItems: z
+      .array(
+        z.object({
+          productId: z.string().uuid('Invalid product ID'),
+          quantity: z.number().int().min(1, 'Quantity must be at least 1'),
+        }),
+      )
+      .min(1, 'Guest checkout requires at least one item')
+      .optional(),
   }),
 });
 

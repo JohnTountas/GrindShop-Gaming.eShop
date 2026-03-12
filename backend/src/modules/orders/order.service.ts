@@ -1,55 +1,53 @@
 /**
  * Business logic for order placement, stock checks, and status transitions.
  */
+import { randomUUID } from 'crypto';
+import { hashSync } from 'bcryptjs';
 import prisma from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { CreateOrderDTO, UpdateOrderStatusDTO } from './order.dto';
-import { OrderStatus, Prisma } from '@prisma/client';
+import { OrderStatus, Prisma, Product } from '@prisma/client';
+
+type CheckoutItem = {
+  productId: string;
+  quantity: number;
+  product: Product;
+};
+
+const guestCheckoutUserEmail = 'guest.checkout@grindspot.local';
+const guestCheckoutPasswordHash = hashSync(randomUUID(), 10);
 
 /**
  * Coordinates order placement and retrieval logic.
  */
 export class OrderService {
-  // Creates an order from cart items, updates stock, and clears the cart in one transaction.
-  async create(userId: string, data: CreateOrderDTO) {
-    const cart = await prisma.cart.findUnique({
-      where: { userId },
-      include: {
-        items: {
-          include: {
-            product: true,
-          },
-        },
-      },
-    });
+  // Creates an order from member cart items or guest checkout items in one transaction.
+  async create(userId: string | undefined, data: CreateOrderDTO) {
+    const cartSnapshot = userId ? await this.getCartCheckoutItems(userId) : null;
+    const checkoutItems = cartSnapshot?.items ?? (await this.getGuestCheckoutItems(data));
 
-    if (!cart || cart.items.length === 0) {
+    if (checkoutItems.length === 0) {
       throw new AppError('Cart is empty', 400);
     }
 
-    // Check stock availability
-    for (const item of cart.items) {
-      if (item.product.stock < item.quantity) {
-        throw new AppError(`The product "${item.product.title}" is currentlyout of stock.`, 400);
-      }
-    }
-
     // Calculate total
-    const total = cart.items.reduce((sum, item) => {
+    const total = checkoutItems.reduce((sum, item) => {
       return sum + Number(item.product.price) * item.quantity;
     }, 0);
 
     // Create order with transaction
     const order = await prisma.$transaction(async (tx) => {
+      const resolvedUserId = userId ?? (await this.getGuestCheckoutUserId(tx));
+
       // Create order
       const newOrder = await tx.order.create({
         data: {
-          userId,
+          userId: resolvedUserId,
           total,
           shippingAddress: data.shippingAddress,
           status: 'PENDING',
           items: {
-            create: cart.items.map((item) => ({
+            create: checkoutItems.map((item) => ({
               productId: item.productId,
               quantity: item.quantity,
               priceAtPurchase: item.product.price,
@@ -66,7 +64,7 @@ export class OrderService {
       });
 
       // Decrement stock
-      for (const item of cart.items) {
+      for (const item of checkoutItems) {
         await tx.product.update({
           where: { id: item.productId },
           data: {
@@ -77,15 +75,109 @@ export class OrderService {
         });
       }
 
-      // Clear cart
-      await tx.cartItem.deleteMany({
-        where: { cartId: cart.id },
-      });
+      // Clear the authenticated cart after the order is committed.
+      if (cartSnapshot) {
+        await tx.cartItem.deleteMany({
+          where: { cartId: cartSnapshot.cartId },
+        });
+      }
 
       return newOrder;
     });
 
     return order;
+  }
+
+  // Loads the authenticated cart snapshot used to create an order.
+  private async getCartCheckoutItems(userId: string): Promise<{ cartId: string; items: CheckoutItem[] }> {
+    const cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (!cart || cart.items.length === 0) {
+      throw new AppError('Cart is empty', 400);
+    }
+
+    for (const item of cart.items) {
+      if (item.product.stock < item.quantity) {
+        throw new AppError(`The product "${item.product.title}" is currently out of stock.`, 400);
+      }
+    }
+
+    return {
+      cartId: cart.id,
+      items: cart.items,
+    };
+  }
+
+  // Resolves guest checkout payloads into product-backed order lines.
+  private async getGuestCheckoutItems(data: CreateOrderDTO): Promise<CheckoutItem[]> {
+    const guestItemQuantities = new Map<string, number>();
+
+    for (const item of data.guestItems ?? []) {
+      guestItemQuantities.set(
+        item.productId,
+        (guestItemQuantities.get(item.productId) ?? 0) + item.quantity,
+      );
+    }
+
+    if (guestItemQuantities.size === 0) {
+      throw new AppError('Cart is empty', 400);
+    }
+
+    const products = await prisma.product.findMany({
+      where: {
+        id: {
+          in: Array.from(guestItemQuantities.keys()),
+        },
+      },
+    });
+
+    if (products.length !== guestItemQuantities.size) {
+      throw new AppError('One or more products could not be found.', 404);
+    }
+
+    return products.map((product) => {
+      const quantity = guestItemQuantities.get(product.id) ?? 0;
+
+      if (product.stock < quantity) {
+        throw new AppError(`The product "${product.title}" is currently out of stock.`, 400);
+      }
+
+      return {
+        productId: product.id,
+        quantity,
+        product,
+      };
+    });
+  }
+
+  // Creates a dedicated hidden account used to anchor guest checkout orders.
+  private async getGuestCheckoutUserId(tx: Prisma.TransactionClient): Promise<string> {
+    const guestCheckoutUser = await tx.user.upsert({
+      where: {
+        email: guestCheckoutUserEmail,
+      },
+      update: {},
+      create: {
+        email: guestCheckoutUserEmail,
+        passwordHash: guestCheckoutPasswordHash,
+        firstName: 'Guest',
+        lastName: 'Checkout',
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return guestCheckoutUser.id;
   }
 
   // Lists orders for a specific user in reverse chronological order.

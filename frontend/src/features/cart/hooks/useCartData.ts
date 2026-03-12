@@ -1,33 +1,15 @@
 /**
  * Shared cart data hook that supports authenticated and guest carts.
  */
-import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getCart } from '../api/cart';
-import { cartKey } from '../queryKeys';
-import { readGuestCart, subscribeToGuestCart } from '@/shared/cart/guestCart';
 import { isAuthenticated } from '@/shared/auth/session';
-import type { Cart } from '@/shared/types';
+import { useAuthenticatedCartData } from './auth/useAuthenticatedCartData';
+import { useGuestCartData } from './guest/useGuestCartData';
 
 // Provides a unified cart view for authenticated users and guests.
 export function useCartData() {
   const authed = isAuthenticated();
-  const [guestCart, setGuestCart] = useState<Cart>(() => readGuestCart());
-
-  useEffect(() => {
-    if (authed) {
-      return;
-    }
-
-    setGuestCart(readGuestCart());
-    return subscribeToGuestCart(setGuestCart);
-  }, [authed]);
-
-  const cartQuery = useQuery({
-    queryKey: cartKey,
-    queryFn: getCart,
-    enabled: authed,
-  });
+  const guestCart = useGuestCartData(!authed);
+  const cartQuery = useAuthenticatedCartData(authed);
 
   return {
     authed,

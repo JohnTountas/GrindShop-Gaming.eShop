@@ -3,21 +3,21 @@
  */
 import { useMutation } from '@tanstack/react-query';
 import { getApiErrorMessage } from '@/shared/api/error';
-import { createOrder } from '@/features/orders/api/orders';
-import type { CreateOrderData } from '@/shared/types';
+import type { CreateOrderData, Order } from '@/shared/types';
+import { createCheckoutOrder } from '../api/checkout';
 
 // Optional callbacks for create-order mutation behavior.
 interface UseCreateOrderOptions {
-  onSuccess?: (orderId: string) => void;
+  onSuccess?: (order: Order) => void;
   onError?: (message: string) => void;
 }
 
 // React Query mutation hook to submit a checkout order.
 export function useCreateOrder(options: UseCreateOrderOptions = {}) {
   return useMutation({
-    mutationFn: (payload: CreateOrderData) => createOrder(payload),
+    mutationFn: (payload: CreateOrderData) => createCheckoutOrder(payload),
     onSuccess: (order) => {
-      options.onSuccess?.(order.id);
+      options.onSuccess?.(order);
     },
     onError: (error) => {
       options.onError?.(getApiErrorMessage(error, 'Failed to create order'));

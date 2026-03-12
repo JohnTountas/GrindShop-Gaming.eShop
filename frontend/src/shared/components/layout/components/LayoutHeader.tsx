@@ -7,6 +7,7 @@ interface LayoutHeaderProps {
   authed: boolean;
   user: User | null;
   displayName: string;
+  cartCountLabel: string;
   isHeaderVisible: boolean;
   wishlistCountLabel: string;
   onLogout: () => void;
@@ -18,6 +19,7 @@ function LayoutHeader({
   authed,
   user,
   displayName,
+  cartCountLabel,
   isHeaderVisible,
   wishlistCountLabel,
   onLogout,
@@ -61,6 +63,7 @@ function LayoutHeader({
             authed={authed}
             user={user}
             displayName={displayName}
+            cartCountLabel={cartCountLabel}
             wishlistCountLabel={wishlistCountLabel}
             onLogout={onLogout}
             onScrollToTop={onScrollToTop}

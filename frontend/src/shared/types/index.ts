@@ -181,6 +181,10 @@ export interface Order {
 export interface CreateOrderData {
   shippingAddress: ShippingAddress;
   paymentIntentId?: string;
+  guestItems?: Array<{
+    productId: string;
+    quantity: number;
+  }>;
 }
 
 /** Paginated response for order list queries. */

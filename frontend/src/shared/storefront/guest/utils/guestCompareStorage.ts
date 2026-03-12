@@ -1,8 +1,4 @@
-import {
-  defaultStorefrontState,
-  guestCompareStorageKey,
-  guestCompareUpdatedEvent,
-} from '../constants';
+import { guestCompareStorageKey, guestCompareUpdatedEvent } from '../../constants';
 
 function dispatchGuestCompareUpdated() {
   if (typeof window === 'undefined') {
@@ -24,13 +20,12 @@ export function readGuestCompareIds(): string[] {
 
   try {
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) {
-      localStorage.removeItem(guestCompareStorageKey);
-      return [];
+    if (Array.isArray(parsed)) {
+      return parsed.filter((value): value is string => typeof value === 'string');
     }
 
-    const normalized = parsed.filter((item): item is string => typeof item === 'string');
-    return [...new Set(normalized)].slice(0, defaultStorefrontState.compareLimit);
+    localStorage.removeItem(guestCompareStorageKey);
+    return [];
   } catch {
     localStorage.removeItem(guestCompareStorageKey);
     return [];

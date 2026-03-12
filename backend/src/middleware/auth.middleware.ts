@@ -40,6 +40,30 @@ export const authenticate = async (req: AuthRequest, _res: Response, next: NextF
   }
 };
 
+// Attaches user context when a valid bearer token is present but allows anonymous access otherwise.
+export const optionalAuthenticate = async (req: AuthRequest, _res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next();
+  }
+
+  try {
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    };
+
+    next();
+  } catch {
+    next(new AppError("Invalid or expired token", 401));
+  }
+};
+
 // Enforces role-based access control for protected endpoints.
 export const authorize = (...roles: string[]) => {
   return (req: AuthRequest, _res: Response, next: NextFunction) => {

@@ -9,10 +9,10 @@ import { AuthRequest } from '../../middleware/auth.middleware';
 // Service instance used by order controllers.
 const orderService = new OrderService();
 
-// Creates an order from the authenticated user's current cart.
+// Creates an order from the authenticated cart or a guest checkout payload.
 export const createOrder = asyncHandler(
   async (req: AuthRequest, res: Response, _next: NextFunction) => {
-    const order = await orderService.create(req.user!.id, req.body);
+    const order = await orderService.create(req.user?.id, req.body);
     res.status(201).json(order);
   }
 );

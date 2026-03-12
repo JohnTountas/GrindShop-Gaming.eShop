@@ -7,6 +7,7 @@ import Login from '@/features/auth/pages/Login';
 import Register from '@/features/auth/pages/Register';
 import Cart from '@/features/cart/pages/Cart';
 import Checkout from '@/features/checkout/pages/Checkout';
+import GuestOrderConfirmation from '@/features/orders/pages/GuestOrderConfirmation';
 import Orders from '@/features/orders/pages/Orders';
 import OrderDetail from '@/features/orders/pages/OrderDetail';
 import Home from '@/features/products/pages/Home';
@@ -26,6 +27,7 @@ function AppRouter() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="checkout" element={<Checkout />} />
+          <Route path="checkout/success/:id" element={<GuestOrderConfirmation />} />
           <Route
             path="orders"
             element={

@@ -1,38 +1,38 @@
 /**
  * Shopping cart page for quantity edits, item removal, and totals.
  */
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { CartItem } from '@/shared/types';
-import { getApiErrorMessage } from '@/shared/api/error';
-import { LoadingCart } from '../components/LoadingCart';
-import { useCartData } from '../hooks/useCartData';
-import { useRemoveCartItem } from '../hooks/useRemoveCartItem';
-import { useUpdateCartItem } from '../hooks/useUpdateCartItem';
-import { formatCurrency } from '@/shared/utils/formatCurrency';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { CartItem } from "@/shared/types";
+import { getApiErrorMessage } from "@/shared/api/error";
+import { LoadingCart } from "../components/LoadingCart";
+import { useCartData } from "../hooks/useCartData";
+import { useRemoveCartItem } from "../hooks/useRemoveCartItem";
+import { useUpdateCartItem } from "../hooks/useUpdateCartItem";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 
 // Coordinates cart data fetching, quantity mutations, removal actions, and order summary totals.
 function Cart() {
   const { authed, cart, isLoading, isError, error, refetch } = useCartData();
 
   // UI feedback for asynchronous cart actions.
-  const [statusMessage, setStatusMessage] = useState('');
-  const [statusTone, setStatusTone] = useState<'success' | 'error'>('success');
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusTone, setStatusTone] = useState<"success" | "error">("success");
   const [pendingUpdateItemId, setPendingUpdateItemId] = useState<string | null>(null);
   const [pendingRemoveItemId, setPendingRemoveItemId] = useState<string | null>(null);
 
   const updateItemMutation = useUpdateCartItem({
     authed,
     onMutate: (itemId) => {
-      setStatusMessage('');
+      setStatusMessage("");
       setPendingUpdateItemId(itemId);
     },
     onSuccess: () => {
-      setStatusTone('success');
-      setStatusMessage('Cart updated');
+      setStatusTone("success");
+      setStatusMessage("Cart updated");
     },
     onError: (message) => {
-      setStatusTone('error');
+      setStatusTone("error");
       setStatusMessage(message);
     },
     onSettled: () => {
@@ -43,15 +43,15 @@ function Cart() {
   const removeItemMutation = useRemoveCartItem({
     authed,
     onMutate: (itemId) => {
-      setStatusMessage('');
+      setStatusMessage("");
       setPendingRemoveItemId(itemId);
     },
     onSuccess: () => {
-      setStatusTone('success');
-      setStatusMessage('Item removed from cart');
+      setStatusTone("success");
+      setStatusMessage("Item removed from cart");
     },
     onError: (message) => {
-      setStatusTone('error');
+      setStatusTone("error");
       setStatusMessage(message);
     },
     onSettled: () => {
@@ -72,7 +72,7 @@ function Cart() {
     return (
       <div role="alert" className="surface-card border-red-200 bg-red-50 p-5 text-red-800">
         <p className="font-semibold">Unable to load your cart</p>
-        <p className="mt-1 text-sm">{getApiErrorMessage(error, 'Failed to load cart')}</p>
+        <p className="mt-1 text-sm">{getApiErrorMessage(error, "Failed to load cart")}</p>
         <button
           type="button"
           onClick={() => refetch()}
@@ -102,7 +102,7 @@ function Cart() {
           </p>
           <h1 className="mt-1 text-3xl font-semibold text-primary-900">Review your items</h1>
         </div>
-        <p className="rounded-full border border-primary-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-primary-700">
+        <p className="rounded-full border border-primary-300 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-black">
           {itemCount} items
         </p>
       </header>
@@ -112,9 +112,9 @@ function Cart() {
           role="status"
           aria-live="polite"
           className={`surface-card border px-4 py-3 text-sm font-semibold ${
-            statusTone === 'success'
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-              : 'border-red-200 bg-red-50 text-red-800'
+            statusTone === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border-red-200 bg-red-50 text-red-800"
           }`}
         >
           {statusMessage}
@@ -216,12 +216,12 @@ function Cart() {
                       className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                       disabled={isBusy}
                     >
-                      {isRemoving ? 'Removing' : 'Remove'}
+                      {isRemoving ? "Removing" : "Remove"}
                     </button>
                   </div>
 
                   <p className="ml-auto text-sm font-semibold text-primary-900">
-                    {isUpdating ? 'Updating...' : formatCurrency(itemTotal(item))}
+                    {isUpdating ? "Updating..." : formatCurrency(itemTotal(item))}
                   </p>
                 </article>
               );
@@ -236,11 +236,11 @@ function Cart() {
                 <p className="font-semibold text-primary-900">{formatCurrency(subtotal)}</p>
               </div>
               <div className="flex items-center justify-between">
-                <p>Estimated shipping:</p>
+                <p>Estimated Shipping:</p>
                 <p className="font-semibold text-primary-900">{formatCurrency(shippingEstimate)}</p>
               </div>
               <div className="flex items-center justify-between">
-                <p>Estimated tax: 24%</p>
+                <p>Estimated Tax: 24%</p>
                 <p className="font-semibold text-primary-900">{formatCurrency(taxEstimate)}</p>
               </div>
             </div>
@@ -274,16 +274,10 @@ function Cart() {
               </p>
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary-600">
-              <p className="rounded-full border border-primary-300/70 bg-primary-100/72 px-3 py-1">
-                Secure payment
-              </p>
-              <p className="rounded-full border border-primary-300/70 bg-primary-100/72 px-3 py-1">
-                Fast delivery
-              </p>
-              <p className="rounded-full border border-primary-300/70 bg-primary-100/72 px-3 py-1">
-                30-day returns
-              </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <p className="checkout-summary-pill">Secure payment</p>
+              <p className="checkout-summary-pill">Fast delivery</p>
+              <p className="checkout-summary-pill">30-day returns</p>
             </div>
 
             <p className="mt-2 text-xs text-primary-600">
@@ -298,5 +292,3 @@ function Cart() {
 }
 
 export default Cart;
-
-

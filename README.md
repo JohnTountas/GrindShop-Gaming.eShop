@@ -74,21 +74,35 @@ grindspot/
 |  |- prisma/
 |  |- scripts/
 |  |- src/
+|  |  |- bootstrap/
 |  |  |- config/
 |  |  |- middleware/
 |  |  |- modules/
+|  |  |  |- adminCatalog/
+|  |  |  |- auth/
+|  |  |  |- cart/
+|  |  |  |- categories/
+|  |  |  |- orders/
+|  |  |  |- products/
+|  |  |  |- storefront/
 |  |  |- utils/
+|  |  |- app.ts
+|  |  |- server.ts
+|  |- tests/
+|  |- uploads/
 |- frontend/
 |  |- public/
 |  |- src/
-|  |  |- components/
+|  |  |- app/
+|  |  |  |- providers/
+|  |  |  |- router/
+|  |  |  |- App.tsx
 |  |  |- features/
 |  |  |  |- admin/
 |  |  |  |  |- api/
 |  |  |  |  |- components/
 |  |  |  |  |- hooks/
 |  |  |  |  |- pages/
-|  |  |  |  |- utils/
 |  |  |  |  |- constants.ts
 |  |  |  |  |- queryKeys.ts
 |  |  |  |  |- types.ts
@@ -101,12 +115,19 @@ grindspot/
 |  |  |  |  |- api/
 |  |  |  |  |- components/
 |  |  |  |  |- hooks/
+|  |  |  |  |  |- auth/
+|  |  |  |  |  |- guest/
 |  |  |  |  |- pages/
-|  |  |  |  |- utils/
 |  |  |  |  |- queryKeys.ts
 |  |  |  |- checkout/
 |  |  |  |  |- api/
 |  |  |  |  |- components/
+|  |  |  |  |  |- forms/
+|  |  |  |  |  |- payment/
+|  |  |  |  |  |- sections/
+|  |  |  |  |  |- states/
+|  |  |  |  |  |- summary/
+|  |  |  |  |- config/
 |  |  |  |  |- hooks/
 |  |  |  |  |- pages/
 |  |  |  |  |- utils/
@@ -122,10 +143,8 @@ grindspot/
 |  |  |  |  |- queryKeys.ts
 |  |  |  |- products/
 |  |  |  |  |- api/
-|  |  |  |  |- components/
 |  |  |  |  |- hooks/
 |  |  |  |  |- pages/
-|  |  |  |  |- utils/
 |  |  |  |  |- constants.ts
 |  |  |  |  |- queryKeys.ts
 |  |  |  |  |- types.ts
@@ -134,19 +153,56 @@ grindspot/
 |  |  |  |  |- components/
 |  |  |  |  |- hooks/
 |  |  |  |  |- pages/
-|  |  |  |  |- utils/
 |  |  |  |  |- queryKeys.ts
-|  |  |- lib/
+|  |  |- shared/
+|  |  |  |- api/
+|  |  |  |- auth/
+|  |  |  |- brand/
+|  |  |  |- cart/
+|  |  |  |  |- api/
+|  |  |  |  |- auth/
+|  |  |  |  |  |- api/
+|  |  |  |  |  |- hooks/
+|  |  |  |  |- guest/
+|  |  |  |  |- utils/
+|  |  |  |  |- constants.ts
+|  |  |  |  |- guestCart.ts
+|  |  |  |  |- types.ts
+|  |  |  |- components/
+|  |  |  |  |- feedback/
+|  |  |  |  |- layout/
+|  |  |  |  |  |- components/
+|  |  |  |  |  |- hooks/
+|  |  |  |  |- routing/
+|  |  |  |- storefront/
+|  |  |  |  |- api/
+|  |  |  |  |- auth/
+|  |  |  |  |  |- hooks/
+|  |  |  |  |- guest/
+|  |  |  |  |  |- hooks/
+|  |  |  |  |  |- utils/
+|  |  |  |  |- hooks/
+|  |  |  |  |- utils/
+|  |  |  |  |- constants.ts
+|  |  |  |  |- queryKeys.ts
+|  |  |  |  |- storefront.ts
+|  |  |  |  |- types.ts
 |  |  |- types/
-|  |  |- App.tsx
+|  |  |- ui/
+|  |  |- utils/
 |  |  |- index.css
 |  |  |- main.tsx
 |  |  |- vite-env.d.ts
 |- .github/workflows/
+|- backend/docker-entrypoint.sh
 |- docker-compose.yml
 |- Dockerfile
 |- fly.toml
+|- README.md
 ```
+
+Generated directories like `node_modules/` and build outputs like `dist/` are intentionally omitted
+from the tree above.
 
 ## Architecture Summary
 
@@ -161,8 +217,8 @@ grindspot/
 - [frontend/src/main.tsx](frontend/src/main.tsx) mounts the React application.
 - [frontend/src/app/App.tsx](frontend/src/app/App.tsx) composes application providers and the route tree.
 - [frontend/src/app/router/AppRouter.tsx](frontend/src/app/router/AppRouter.tsx) owns top-level routing.
-- Feature pages live under `frontend/src/features/*`, organized by `api/`, `hooks/`, `components/`, `utils/`, and `pages/` with feature-local `constants.ts`, `queryKeys.ts`, and `types.ts` where needed.
-- Cross-feature code lives under `frontend/src/shared/*`, split into `api/`, `auth/`, `brand/`, `cart/`, `storefront/`, `components/`, `types/`, and `utils/`.
+- Feature code lives under `frontend/src/features/*`. Folder shapes vary by domain, but each feature keeps its own `api/`, `hooks/`, `pages/`, optional `components/`, `utils/`, `config/`, and feature-local `constants.ts`, `queryKeys.ts`, and `types.ts` where needed.
+- Cross-feature code lives under `frontend/src/shared/*`. Shared cart and storefront logic are now explicitly split into `auth/` and `guest/` subfolders so authenticated and anonymous flows stay isolated.
 
 ### Production shape
 

@@ -1,22 +1,9 @@
 /**
  * Mutation hook for removing cart items.
  */
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { removeCartItem as removeCartItemApi } from '../api/cart';
-import { cartKey } from '../queryKeys';
-import { readGuestCart, removeGuestCartItem } from '@/shared/cart/guestCart';
-import { getApiErrorMessage } from '@/shared/api/error';
-import type { Cart } from '@/shared/types';
-
-// Options for reacting to cart-item removal lifecycle events.
-interface UseRemoveCartItemOptions {
-  authed: boolean;
-  onGuestCartUpdated?: (cart: Cart) => void;
-  onMutate?: (itemId: string) => void;
-  onSuccess?: () => void;
-  onError?: (message: string) => void;
-  onSettled?: () => void;
-}
+import { useAuthenticatedRemoveCartItem } from './auth/useAuthenticatedRemoveCartItem';
+import { useGuestRemoveCartItem } from './guest/useGuestRemoveCartItem';
+import type { UseRemoveCartItemOptions } from './types';
 
 // React Query mutation hook to remove a cart item.
 export function useRemoveCartItem({
@@ -27,32 +14,20 @@ export function useRemoveCartItem({
   onError,
   onSettled,
 }: UseRemoveCartItemOptions) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (itemId: string) => {
-      if (!authed) {
-        return removeGuestCartItem(itemId);
-      }
-      return removeCartItemApi(itemId);
-    },
-    onMutate: (itemId) => {
-      onMutate?.(itemId);
-    },
-    onSuccess: async () => {
-      if (authed) {
-        await queryClient.invalidateQueries({ queryKey: cartKey });
-      } else {
-        onGuestCartUpdated?.(readGuestCart());
-      }
-      onSuccess?.();
-    },
-    onError: (error) => {
-      onError?.(getApiErrorMessage(error, 'Unable to remove cart item'));
-    },
-    onSettled: () => {
-      onSettled?.();
-    },
+  const authenticatedMutation = useAuthenticatedRemoveCartItem({
+    onMutate,
+    onSuccess,
+    onError,
+    onSettled,
   });
+  const guestMutation = useGuestRemoveCartItem({
+    onGuestCartUpdated,
+    onMutate,
+    onSuccess,
+    onError,
+    onSettled,
+  });
+
+  return authed ? authenticatedMutation : guestMutation;
 }
 

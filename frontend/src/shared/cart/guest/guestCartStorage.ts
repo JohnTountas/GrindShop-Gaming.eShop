@@ -1,3 +1,6 @@
+/**
+ * Guest-cart storage helpers isolated from authenticated cart behavior.
+ */
 import type { Cart, CartItem, Product } from '@/shared/types';
 import { guestCartId, guestCartStorageKey, guestCartUpdatedEvent } from '../constants';
 import type { StoredGuestCart } from '../types';

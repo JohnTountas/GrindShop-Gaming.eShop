@@ -1,37 +1,28 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toggleWishlistProduct } from '../api/storefrontApi';
+import { isAuthenticated } from '@/shared/auth/session';
 import { defaultStorefrontState } from '../constants';
-import { storefrontStateKey, wishlistProductsKey } from '../queryKeys';
 import type { StorefrontToggleResult } from '../types';
-import { useStorefrontState } from './useStorefrontState';
+import { useAuthenticatedWishlist } from '../auth/hooks/useAuthenticatedWishlist';
 
 export function useWishlist() {
-  const queryClient = useQueryClient();
-  const storefrontQuery = useStorefrontState();
-  const ids = storefrontQuery.data?.wishlistProductIds ?? defaultStorefrontState.wishlistProductIds;
+  const authed = isAuthenticated();
+  const authenticatedWishlist = useAuthenticatedWishlist(authed);
 
-  const toggleMutation = useMutation({
-    mutationFn: toggleWishlistProduct,
-    onSuccess: async (data) => {
-      queryClient.setQueryData(storefrontStateKey, data);
-      await queryClient.invalidateQueries({ queryKey: wishlistProductsKey });
-    },
-  });
+  if (!authed) {
+    return {
+      ids: defaultStorefrontState.wishlistProductIds,
+      isLoading: false,
+      async toggle(_productId: string): Promise<StorefrontToggleResult> {
+        return {
+          added: false,
+          ids: defaultStorefrontState.wishlistProductIds,
+          reachedLimit: false,
+        };
+      },
+      clear() {
+        // Guests do not have wishlist support.
+      },
+    };
+  }
 
-  return {
-    ids,
-    isLoading: storefrontQuery.isLoading || toggleMutation.isPending,
-    async toggle(productId: string): Promise<StorefrontToggleResult> {
-      const response = await toggleMutation.mutateAsync(productId);
-
-      return {
-        added: response.added,
-        ids: response.wishlistProductIds,
-        reachedLimit: false,
-      };
-    },
-    clear() {
-      // Wishlist is toggled item-by-item in the current UX.
-    },
-  };
+  return authenticatedWishlist;
 }

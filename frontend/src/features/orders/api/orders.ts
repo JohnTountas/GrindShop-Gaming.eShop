@@ -18,8 +18,8 @@ export async function getOrderDetail(orderId: string): Promise<Order> {
 }
 
 // Creates a new order with the provided payload.
-export async function createOrder(payload: CreateOrderData) {
-  const response = await api.post('/orders', payload);
-  return response.data as { id: string };
+export async function createOrder(payload: CreateOrderData): Promise<Order> {
+  const response = await api.post<Order>('/orders', payload);
+  return response.data;
 }
 
