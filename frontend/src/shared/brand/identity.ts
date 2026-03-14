@@ -8,7 +8,7 @@ export const BRAND_TAGLINE = "Power Your Play";
 
 // Longer brand positioning statement used in marketing copy.
 export const BRAND_POSITIONING =
-  "The next-gen gaming eShop for curated drops, verified hardware, and lightning-fast fulfillment.";
+  "The next-gen gaming Eshop for curated drops, verified hardware, and lightning-fast fulfillment.";
 
 // Asset path for the brand logo used in headers and overlays.
 export const BRAND_LOGO_SRC = "/product-images/logoSite/logo.png";

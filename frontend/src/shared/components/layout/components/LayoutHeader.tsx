@@ -1,7 +1,12 @@
-import { NavLink } from 'react-router-dom';
-import type { User } from '@/shared/types';
-import { BRAND_LOGO_SRC, BRAND_NAME, BRAND_POSITIONING, BRAND_TAGLINE } from '@/shared/brand/identity';
-import PrimaryNavigation from './PrimaryNavigation';
+import { NavLink } from "react-router-dom";
+import type { User } from "@/shared/types";
+import {
+  BRAND_LOGO_SRC,
+  BRAND_NAME,
+  BRAND_POSITIONING,
+  BRAND_TAGLINE,
+} from "@/shared/brand/identity";
+import PrimaryNavigation from "./PrimaryNavigation";
 
 interface LayoutHeaderProps {
   authed: boolean;
@@ -28,7 +33,7 @@ function LayoutHeader({
   return (
     <header
       className={`sticky top-0 z-40 border-primary-300/55 bg-primary-50/88 transition-transform duration-300 ${
-        isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+        isHeaderVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       <div className="container py-4">
@@ -42,7 +47,7 @@ function LayoutHeader({
               <img
                 src={BRAND_LOGO_SRC}
                 alt={`${BRAND_NAME} logo`}
-                className="h-12 w-auto max-w-[200px] object-contain"
+                className="h-14 w-auto max-w-[300px] object-contain"
               />
               <span className="block text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-accent-700">
                 {BRAND_TAGLINE}
