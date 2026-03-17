@@ -1,8 +1,8 @@
 /**
  * Conditional payment-field renderer for the selected payment method.
  */
-import type { CardPaymentDetails, PaymentMethod } from '../../types';
-import { CheckoutTextField } from '../forms/CheckoutTextField';
+import type { CardPaymentDetails, PaymentMethod } from "../../types";
+import { CheckoutTextField } from "../forms/CheckoutTextField";
 
 interface PaymentMethodFieldsProps {
   selectedPaymentMethod: PaymentMethod;
@@ -38,7 +38,7 @@ export function PaymentMethodFields({
   onWalletEmailChange,
   onBankTransferReferenceChange,
 }: PaymentMethodFieldsProps) {
-  if (selectedPaymentMethod === 'CARD') {
+  if (selectedPaymentMethod === "CARD") {
     return (
       <div className="grid gap-4 rounded-2xl border border-primary-300/70 bg-primary-100/72 p-4 sm:grid-cols-2">
         <CheckoutTextField
@@ -94,14 +94,14 @@ export function PaymentMethodFields({
         <CheckoutTextField
           id="cardCvv"
           name="cardCvv"
-          label="Security code"
+          label="CVV Code"
           autoComplete="cc-csc"
           inputMode="numeric"
           pattern="[0-9]*"
           type="password"
-          maxLength={4}
+          maxLength={3}
           placeholder="e.g. 123"
-          helperText="Enter the 3 or 4 digits shown on your card."
+          helperText="Enter the 3 digits shown on your card."
           value={cardDetails.cvv}
           onChange={(event) => onCardCvvChange(event.target.value)}
           required
@@ -113,7 +113,7 @@ export function PaymentMethodFields({
     );
   }
 
-  if (selectedPaymentMethod === 'BANK_TRANSFER') {
+  if (selectedPaymentMethod === "BANK_TRANSFER") {
     return (
       <div className="rounded-2xl border border-primary-300/70 bg-primary-100/72 p-4">
         <CheckoutTextField
