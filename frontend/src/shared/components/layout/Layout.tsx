@@ -4,19 +4,19 @@
  * This is the one place where global UI concerns meet: header state, footer
  * messaging, toast host, guest-cart sync, and the route outlet.
  */
-import { useQueryClient } from '@tanstack/react-query';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { clearSession, getStoredUser, isAuthenticated } from '@/shared/auth/session';
-import { useCartData } from '@/features/cart/hooks/useCartData';
-import ToastHost from '@/shared/components/feedback/ToastHost';
-import { useWishlist } from '@/shared/storefront/storefront';
-import { showSuccessMessage } from '@/shared/ui/toast';
-import LayoutFooter from './components/LayoutFooter';
-import LayoutHeader from './components/LayoutHeader';
-import FooterMessageModal from './components/FooterMessageModal';
-import { useFooterMessageDialog } from './hooks/useFooterMessageDialog';
-import { useHeaderVisibility } from './hooks/useHeaderVisibility';
-import { useGuestCartSync } from '@/shared/cart/auth/hooks/useGuestCartSync';
+import { useQueryClient } from "@tanstack/react-query";
+import { Outlet, useNavigate } from "react-router-dom";
+import { clearSession, getStoredUser, isAuthenticated } from "@/shared/auth/session";
+import { useCartData } from "@/features/cart/hooks/useCartData";
+import ToastHost from "@/shared/components/feedback/ToastHost";
+import { useWishlist } from "@/shared/storefront/storefront";
+import { showSuccessMessage } from "@/shared/ui/toast";
+import LayoutFooter from "./components/LayoutFooter";
+import LayoutHeader from "./components/LayoutHeader";
+import FooterMessageModal from "./components/FooterMessageModal";
+import { useFooterMessageDialog } from "./hooks/useFooterMessageDialog";
+import { useHeaderVisibility } from "./hooks/useHeaderVisibility";
+import { useGuestCartSync } from "@/shared/cart/auth/hooks/useGuestCartSync";
 
 function Layout() {
   const navigate = useNavigate();
@@ -27,9 +27,9 @@ function Layout() {
   const currentYear = new Date().getFullYear();
   const wishlist = useWishlist();
   const cartCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
-  const cartCountLabel = cartCount > 99 ? '99+' : `${cartCount}`;
-  const wishlistCountLabel = wishlist.ids.length > 99 ? '99+' : `${wishlist.ids.length}`;
-  const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
+  const cartCountLabel = cartCount > 99 ? "99+" : `${cartCount}`;
+  const wishlistCountLabel = wishlist.ids.length > 99 ? "99+" : `${wishlist.ids.length}`;
+  const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
   const isHeaderVisible = useHeaderVisibility();
   const { activeMessage, openFooterMessage, closeFooterMessage } = useFooterMessageDialog();
 
@@ -40,22 +40,23 @@ function Layout() {
   // Some transitions behave like full page changes even inside the SPA. Resetting
   // scroll here keeps that experience predictable.
   function scrollToPageStart() {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }
 
   // Logout is handled optimistically on the client because all auth state lives
   // in local storage plus refresh cookies managed elsewhere.
   function handleLogout() {
-    const logoutUsername = displayName || user?.email?.split('@')[0]?.trim() || user?.email || 'User';
+    const logoutUsername =
+      displayName || user?.email?.split("@")[0]?.trim() || user?.email || "User";
 
     showSuccessMessage({
-      title: 'Logout successful',
-      message: `See you soon, ${logoutUsername}`,
-      tone: 'success',
+      title: "Logout successful",
+      message: `See you soon: ${logoutUsername}`,
+      tone: "success",
     });
 
     clearSession();
-    navigate('/login');
+    navigate("/login");
   }
 
   return (
@@ -87,7 +88,7 @@ function Layout() {
         onScrollToTop={scrollToPageStart}
       />
 
-      <main id="main-content" className="container py-8 md:py-10">
+      <main id="main-content" className="container py-6 sm:py-8 md:py-10">
         <Outlet />
       </main>
 

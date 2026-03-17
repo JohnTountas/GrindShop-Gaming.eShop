@@ -283,27 +283,29 @@ function ProductDetail() {
   }
 
   return (
-    <section className="space-y-6 pb-24 lg:pb-6">
+    <section className="space-y-6 pb-32 sm:pb-24 lg:pb-6">
       <header className="surface-card flex flex-wrap items-center justify-between gap-3 p-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-700">
             Product detail
           </p>
-          <h1 className="mt-1 text-3xl font-semibold text-primary-900">{product.title}</h1>
+          <h1 className="mt-1 text-2xl font-semibold text-primary-900 sm:text-3xl">
+            {product.title}
+          </h1>
           <p className="mt-1 text-sm text-primary-600">
             {getProductBrand(product)} | {product.category?.name ?? "Gaming"}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap">
           <Link
             to="/"
-            className="rounded-full border border-primary-400/70 bg-primary-100/72 px-4 py-2 text-sm font-semibold text-primary-800"
+            className="rounded-full border border-primary-400/70 bg-primary-100/72 px-4 py-2.5 text-center text-sm font-semibold text-primary-800"
           >
             Continue shopping
           </Link>
           <Link
             to="/cart"
-            className="rounded-full bg-primary-800 px-4 py-2 text-sm font-semibold text-white shadow-neon"
+            className="rounded-full bg-primary-800 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-neon"
           >
             View cart
           </Link>
@@ -367,7 +369,7 @@ function ProductDetail() {
         <aside className="space-y-4 lg:col-span-5">
           <div className="surface-card space-y-4 p-5 lg:sticky lg:top-28">
             <p className="text-sm leading-relaxed text-primary-600">{product.description}</p>
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-3xl font-bold text-primary-900">
                   {formatCurrency(Number(product.price))}
@@ -389,7 +391,7 @@ function ProductDetail() {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isCartActionPending || !inStock}
-                className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-500 disabled:opacity-60"
+                className="catalog-action-button rounded-xl bg-primary-800 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-500 disabled:opacity-60"
               >
                 {isAddingToCart ? "Adding..." : inStock ? "Add to cart" : "Out of stock"}
               </button>
@@ -397,7 +399,7 @@ function ProductDetail() {
                 type="button"
                 onClick={handleBuyNow}
                 disabled={isCartActionPending || !inStock}
-                className="rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-2.5 text-center text-sm font-semibold text-primary-800 disabled:opacity-60"
+                className="rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-3 text-center text-sm font-semibold text-primary-800 disabled:opacity-60"
               >
                 {isBuyingNow ? "Opening checkout..." : "Buy now"}
               </button>
@@ -408,7 +410,7 @@ function ProductDetail() {
                 <button
                   type="button"
                   onClick={toggleWishlist}
-                  className={`catalog-action-button rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                  className={`catalog-action-button rounded-xl border px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] ${
                     wishlisted
                       ? "border-accent-700/70 bg-accent-700/18 text-accent-700"
                       : "border-primary-400/70 bg-primary-100/72 text-primary-700"
@@ -420,7 +422,7 @@ function ProductDetail() {
               <button
                 type="button"
                 onClick={toggleCompare}
-                className={`catalog-action-button rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                className={`catalog-action-button rounded-xl border px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] ${
                   compared
                     ? "border-primary-800/80 bg-primary-800/25 text-primary-900"
                     : "border-primary-400/70 bg-primary-100/72 text-primary-700"
@@ -430,7 +432,7 @@ function ProductDetail() {
               </button>
             </div>
 
-            <div className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3 text-xs font-semibold uppercase tracking-[0.14em] text-primary-600">
+            <div className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-primary-600 sm:text-left">
               Visa • Mastercard • PayPal • Apple Pay • Google Pay
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary-600">
@@ -455,7 +457,7 @@ function ProductDetail() {
             {specs.map((spec) => (
               <div
                 key={spec.label}
-                className="flex items-center justify-between rounded-xl border border-primary-300/70 bg-primary-100/68 px-3 py-2"
+                className="flex flex-col items-start gap-1 rounded-xl border border-primary-300/70 bg-primary-100/68 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
               >
                 <p className="text-sm font-semibold text-primary-700">{spec.label}</p>
                 <p className="text-sm text-primary-900">{spec.value}</p>
@@ -472,7 +474,10 @@ function ProductDetail() {
           <p className="text-sm text-primary-600">{review?.totalReviews ?? 0} verified reviews</p>
           <div className="mt-3 space-y-2">
             {review?.breakdown.map((row) => (
-              <div key={row.stars} className="grid grid-cols-[60px_1fr_42px] items-center gap-2">
+              <div
+                key={row.stars}
+                className="grid grid-cols-[54px_minmax(0,1fr)_40px] items-center gap-2 sm:grid-cols-[60px_1fr_42px]"
+              >
                 <p className="text-xs font-semibold text-primary-700">{row.stars} stars</p>
                 <div className="h-2 rounded-full bg-primary-200">
                   <div
@@ -518,7 +523,7 @@ function ProductDetail() {
       </section>
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-primary-300/70 bg-primary-50/95 p-3 backdrop-blur lg:hidden">
-        <div className="mx-auto flex max-w-2xl items-center gap-2">
+        <div className="mx-auto flex max-w-2xl flex-col gap-2 sm:flex-row sm:items-center">
           <div className="min-w-0 flex-1">
             <p className="line-clamp-1 text-xs font-semibold uppercase tracking-[0.1em] text-primary-600">
               {product.title}
@@ -527,22 +532,24 @@ function ProductDetail() {
               {formatCurrency(Number(product.price))}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={!inStock || isCartActionPending}
-            className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-          >
-            {isAddingToCart ? "Adding..." : "Add to cart"}
-          </button>
-          <button
-            type="button"
-            onClick={handleBuyNow}
-            disabled={!inStock || isCartActionPending}
-            className="catalog-action-button rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-2 text-sm font-semibold text-primary-800 disabled:opacity-60"
-          >
-            {isBuyingNow ? "Checkout..." : "Buy now"}
-          </button>
+          <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={!inStock || isCartActionPending}
+              className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+            >
+              {isAddingToCart ? "Adding..." : "Add to cart"}
+            </button>
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              disabled={!inStock || isCartActionPending}
+              className="catalog-action-button rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-2.5 text-sm font-semibold text-primary-800 disabled:opacity-60"
+            >
+              {isBuyingNow ? "Checkout..." : "Buy now"}
+            </button>
+          </div>
         </div>
       </div>
     </section>

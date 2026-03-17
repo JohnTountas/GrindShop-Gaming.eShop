@@ -77,7 +77,9 @@ function AdminDashboard() {
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-700">
           Admin control center
         </p>
-        <h1 className="mt-1 text-3xl font-semibold text-primary-900">Storefront Operations</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-primary-900 sm:text-3xl">
+          Storefront Operations
+        </h1>
         <p className="mt-2 text-sm text-primary-600">
           Manage order statuses and maintain real product specifications/reviews from one
           dashboard.

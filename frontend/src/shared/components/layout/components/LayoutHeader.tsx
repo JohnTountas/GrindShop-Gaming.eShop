@@ -36,20 +36,20 @@ function LayoutHeader({
         isHeaderVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <div className="container py-4">
-        <div className="surface-card border-primary-300/60 bg-primary-100/72 px-4 py-4 shadow-raised backdrop-blur-2xl sm:px-8 sm:py-6">
-          <div className="flex flex-wrap items-center gap-3">
+      <div className="container py-3 sm:py-4">
+        <div className="surface-card border-primary-300/60 bg-primary-100/72 px-3 py-3 shadow-raised backdrop-blur-2xl sm:px-6 sm:py-5 lg:px-8 lg:py-6">
+          <div className="flex flex-wrap items-start gap-3 sm:items-center sm:gap-4">
             <NavLink
               to="/"
               onClick={onScrollToTop}
-              className="group inline-flex items-center gap-3 text-primary-900"
+              className="group inline-flex max-w-full items-center gap-2.5 text-primary-900 sm:gap-3"
             >
               <img
                 src={BRAND_LOGO_SRC}
                 alt={`${BRAND_NAME} logo`}
-                className="h-14 w-auto max-w-[300px] object-contain"
+                className="h-11 w-auto max-w-[180px] object-contain sm:h-14 sm:max-w-[300px]"
               />
-              <span className="block text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-accent-700">
+              <span className="block max-w-[8rem] text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-accent-700 sm:max-w-none sm:text-[0.7rem] sm:tracking-[0.26em]">
                 {BRAND_TAGLINE}
               </span>
             </NavLink>

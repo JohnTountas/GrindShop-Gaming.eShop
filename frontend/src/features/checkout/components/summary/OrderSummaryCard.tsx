@@ -15,24 +15,24 @@ export function OrderSummaryCard({ totals }: OrderSummaryCardProps) {
     <div className="surface-card p-5 sm:p-6">
       <h2 className="text-xl font-semibold text-primary-900">Order summary</h2>
       <div className="mt-4 space-y-2 text-sm text-primary-700">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
           <p>Subtotal</p>
           <p className="font-semibold text-primary-900">{formatCurrency(totals.subtotal)}</p>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
           <p>Estimated Shipping</p>
           <p className="font-semibold text-primary-900">
             {formatCurrency(totals.shippingEstimate)}
           </p>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
           <p>Estimated Tax: 24%</p>
           <p className="font-semibold text-primary-900">{formatCurrency(totals.taxEstimate)}</p>
         </div>
       </div>
 
       <div className="mt-4 rounded-2xl border border-primary-100 bg-primary-50/80 p-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-primary-700">Estimated Total:</p>
           <p className="text-2xl font-bold text-primary-900">
             {formatCurrency(totals.totalEstimate)}

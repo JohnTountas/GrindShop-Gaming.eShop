@@ -41,6 +41,10 @@ export function ShippingAddressSection({
                 label={field.label}
                 autoComplete={field.autoComplete}
                 placeholder={field.placeholder}
+                inputMode={field.inputMode}
+                pattern={field.pattern}
+                maxLength={field.maxLength}
+                helperText={field.helperText}
                 required
                 value={value}
                 onChange={(event) => onFieldChange(field.key, event.target.value)}

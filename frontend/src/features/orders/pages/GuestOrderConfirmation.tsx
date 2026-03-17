@@ -47,13 +47,13 @@ function GuestOrderConfirmation() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-500">
               Guest checkout
             </p>
-            <h1 className="mt-2 text-3xl font-semibold text-primary-900">
+            <h1 className="mt-2 text-2xl font-semibold text-primary-900 sm:text-3xl">
               Order #{order.id.slice(0, 8)}
             </h1>
             <p className="mt-2 text-sm text-primary-600">Placed on {formatDate(order.createdAt)}</p>
           </div>
 
-          <div className="text-right">
+          <div className="w-full text-left sm:w-auto sm:text-right">
             <p
               className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${ORDER_STATUS_STYLES[order.status]}`}
             >
@@ -88,7 +88,7 @@ function GuestOrderConfirmation() {
               {order.items.map((item) => (
                 <li
                   key={item.id}
-                  className="flex flex-wrap items-center gap-3 rounded-2xl border border-primary-300/70 bg-primary-100/72 p-3"
+                  className="flex flex-wrap items-start gap-3 rounded-2xl border border-primary-300/70 bg-primary-100/72 p-3 sm:items-center"
                 >
                   <div className="product-image-frame h-14 w-14 rounded-xl bg-gradient-to-br from-primary-100 via-primary-50 to-accent-100">
                     {item.product.images[0] ? (
@@ -106,14 +106,14 @@ function GuestOrderConfirmation() {
                     )}
                   </div>
 
-                  <div className="min-w-[180px] flex-1">
+                  <div className="min-w-0 flex-1">
                     <p className="font-semibold text-primary-900">{item.product.title}</p>
                     <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary-500">
                       Qty {item.quantity} x {formatCurrency(Number(item.priceAtPurchase))}
                     </p>
                   </div>
 
-                  <p className="text-sm font-semibold text-primary-900">
+                  <p className="w-full text-sm font-semibold text-primary-900 sm:w-auto sm:text-right">
                     {formatCurrency(Number(item.priceAtPurchase) * item.quantity)}
                   </p>
                 </li>
@@ -126,19 +126,19 @@ function GuestOrderConfirmation() {
           <div className="surface-card p-5 sm:p-6">
             <h2 className="text-lg font-semibold text-primary-900">Order summary</h2>
             <div className="mt-4 space-y-2 text-sm text-primary-700">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <p>Items</p>
                 <p className="font-semibold text-primary-900">
                   {itemCount} item{itemCount === 1 ? "" : "s"}
                 </p>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <p>Items subtotal</p>
                 <p className="font-semibold text-primary-900">{formatCurrency(itemSubtotal)}</p>
               </div>
             </div>
             <div className="mt-4 rounded-2xl border border-primary-100 bg-primary-50/80 p-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm font-semibold text-primary-700">Total Paid</p>
                 <p className="text-2xl font-bold text-primary-900">
                   {formatCurrency(Number(order.total))}

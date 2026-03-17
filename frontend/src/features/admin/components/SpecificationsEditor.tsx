@@ -79,7 +79,7 @@ export function SpecificationsEditor({
         <button
           type="submit"
           disabled={createSpecMutation.isPending}
-          className="rounded-xl bg-primary-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          className="rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
         >
           Add spec
         </button>
@@ -122,19 +122,19 @@ function SpecificationRow({
         <input
           value={label}
           onChange={(event) => setLabel(event.target.value)}
-          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-1.5 text-xs text-primary-900"
+          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-2 text-sm text-primary-900 sm:text-xs"
         />
         <input
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-1.5 text-xs text-primary-900"
+          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-2 text-sm text-primary-900 sm:text-xs"
         />
         <input
           value={position}
           onChange={(event) => setPosition(event.target.value)}
           type="number"
           min={0}
-          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-1.5 text-xs text-primary-900"
+          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-2 text-sm text-primary-900 sm:text-xs"
         />
         <button
           type="button"
@@ -146,14 +146,14 @@ function SpecificationRow({
               position: Number(position) || 0,
             })
           }
-          className="rounded-lg bg-primary-800 px-3 py-1.5 text-xs font-semibold text-white"
+          className="rounded-lg bg-primary-800 px-3 py-2 text-xs font-semibold text-white"
         >
           Save
         </button>
         <button
           type="button"
           onClick={() => onDelete(specification.id)}
-          className="rounded-lg border border-red-300/70 bg-red-900/20 px-3 py-1.5 text-xs font-semibold text-red-100"
+          className="rounded-lg border border-red-300/70 bg-red-900/20 px-3 py-2 text-xs font-semibold text-red-100"
         >
           Delete
         </button>

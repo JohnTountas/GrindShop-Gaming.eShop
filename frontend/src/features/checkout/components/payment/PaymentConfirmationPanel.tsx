@@ -1,11 +1,11 @@
 /**
  * Final confirmation controls for payment authorization and policy acceptance.
  */
-import type { MouseEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { formatCurrency } from '../../utils/formatters';
+import type { MouseEvent } from "react";
+import { Link } from "react-router-dom";
+import { formatCurrency } from "../../utils/formatters";
 
-const CHECKBOX_CLASS = 'mt-0.5 h-4 w-4 shrink-0 accent-primary-800';
+const CHECKBOX_CLASS = "mt-0.5 h-4 w-4 shrink-0 accent-primary-800";
 
 interface PaymentConfirmationPanelProps {
   totalEstimate: number;
@@ -53,7 +53,8 @@ export function PaymentConfirmationPanel({
               className={CHECKBOX_CLASS}
             />
             <span>
-              I authorize GrindSpot to charge <strong>{formatCurrency(totalEstimate)}</strong> using{' '}
+              I authorize <strong>GrindSpot</strong> to charge{" "}
+              <strong>{formatCurrency(totalEstimate)}</strong> using{" "}
               <strong>{selectedPaymentLabel}</strong>.
             </span>
           </label>
@@ -66,7 +67,7 @@ export function PaymentConfirmationPanel({
               className={CHECKBOX_CLASS}
             />
             <span>
-              I agree to the{' '}
+              I agree to the{" "}
               <button
                 type="button"
                 onClick={onOpenTerms}
@@ -74,15 +75,15 @@ export function PaymentConfirmationPanel({
               >
                 Terms of Service
               </button>
-              ,{' '}
+              ,{" "}
               <button
                 type="button"
                 onClick={onOpenPrivacy}
                 className="font-semibold text-accent-700 underline underline-offset-2 transition-colors hover:text-accent-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700"
               >
                 Privacy Policy
-              </button>
-              , and applicable payment regulations, including SCA requirements where enforced.
+              </button>{" "}
+              and applicable payment regulations, including SCA requirements where enforced.
             </span>
           </label>
         </div>
@@ -109,11 +110,11 @@ export function PaymentConfirmationPanel({
         </p>
       )}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center rounded-xl bg-primary-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-900 disabled:cursor-not-allowed disabled:bg-primary-300"
+          className="inline-flex w-full items-center justify-center rounded-xl bg-primary-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-900 disabled:cursor-not-allowed disabled:bg-primary-300 sm:w-auto"
         >
           {isSubmitting ? (
             <span className="inline-flex items-center gap-2">
@@ -124,12 +125,12 @@ export function PaymentConfirmationPanel({
               Authorizing payment
             </span>
           ) : (
-            'Confirm payment and place order'
+            "Confirm payment and place order"
           )}
         </button>
         <Link
           to="/cart"
-          className="inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white px-5 py-2.5 text-sm font-semibold text-primary-800 hover:border-primary-500 hover:text-primary-900"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-primary-200 bg-white px-5 py-2.5 text-sm font-semibold text-primary-800 hover:border-primary-500 hover:text-primary-900 sm:w-auto"
         >
           Back to cart
         </Link>

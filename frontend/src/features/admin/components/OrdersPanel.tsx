@@ -58,7 +58,7 @@ export function OrdersPanel({
                     : 'border-primary-300/70 bg-primary-100/70'
                 }`}
               >
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm font-semibold text-primary-900">#{order.id.slice(0, 8)}</p>
                     <p className="text-xs text-primary-600">
@@ -71,7 +71,7 @@ export function OrdersPanel({
                       </p>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                     <span
                       className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${
                         ORDER_STATUS_STYLES[order.status as OrderStatus]
@@ -85,7 +85,7 @@ export function OrdersPanel({
                         onChange={(event) =>
                           onUpdateStatus(order.id, event.target.value as OrderStatus)
                         }
-                        className="rounded-lg border border-primary-300/70 bg-primary-100/75 px-2 py-1 text-xs font-semibold text-primary-900"
+                        className="w-full rounded-lg border border-primary-300/70 bg-primary-100/75 px-2 py-2 text-xs font-semibold text-primary-900 sm:w-auto"
                       >
                         {ORDER_STATUSES.map((status) => (
                           <option key={status} value={status}>
@@ -96,7 +96,7 @@ export function OrdersPanel({
                     ) : (
                       <Link
                         to={`/orders/${order.id}`}
-                        className="rounded-lg border border-primary-300/70 bg-primary-100/75 px-3 py-1.5 text-xs font-semibold text-primary-900 hover:border-accent-700"
+                        className="w-full rounded-lg border border-primary-300/70 bg-primary-100/75 px-3 py-2 text-center text-xs font-semibold text-primary-900 hover:border-accent-700 sm:w-auto"
                       >
                         View details
                       </Link>

@@ -353,16 +353,16 @@ function Home() {
   }
 
   return (
-    <section className="space-y-10">
-      <header className="surface-card grid gap-6 p-6 lg:grid-cols-12 lg:p-8">
+    <section className="space-y-8 sm:space-y-10">
+      <header className="surface-card grid gap-5 p-5 sm:gap-6 sm:p-6 lg:grid-cols-12 lg:p-8">
         <div className="lg:col-span-7">
           <p className="inline-flex rounded-full border border-accent-700/60 bg-primary-100/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-accent-700">
             Esports-grade marketplace
           </p>
-          <h1 className="mt-3 max-w-3xl font-display text-4xl font-bold leading-tight text-primary-900 sm:text-5xl">
+          <h1 className="mt-3 max-w-3xl font-display text-3xl font-bold leading-tight text-primary-900 sm:text-4xl md:text-5xl">
             Build your edge with tournament-ready gear
           </h1>
-          <p className="mt-3 max-w-2xl text-primary-600">
+          <p className="mt-3 max-w-2xl text-sm text-primary-600 sm:text-base">
             {BRAND_NAME} delivers verified performance hardware with trusted delivery and clean
             checkout. {BRAND_TAGLINE}.
           </p>
@@ -372,14 +372,14 @@ function Home() {
               onClick={() =>
                 document.getElementById("catalog-results")?.scrollIntoView({ behavior: "smooth" })
               }
-              className="rounded-full bg-primary-800 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-neon hover:bg-primary-500"
+              className="rounded-full bg-primary-800 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-neon hover:bg-primary-500"
             >
               Shop now
             </button>
           </div>
         </div>
 
-        <aside className="surface-card border-primary-300/70 bg-primary-100/76 p-4 lg:col-span-5">
+        <aside className="surface-card border-primary-300/70 bg-primary-100/76 p-4 sm:p-5 lg:col-span-5">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-700">
             Featured product
           </p>
@@ -389,7 +389,7 @@ function Home() {
                 <img
                   src={hero.images[0]}
                   alt={hero.title}
-                  className="product-image-zoom h-52 w-full object-cover"
+                  className="product-image-zoom h-48 w-full object-cover sm:h-52"
                 />
               </div>
               <h2 className="mt-3 text-2xl font-semibold text-primary-900">{hero.title}</h2>
@@ -400,14 +400,14 @@ function Home() {
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 <Link
                   to={`/products/${hero.id}`}
-                  className="catalog-action-button rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-2 text-center text-sm font-semibold text-primary-800"
+                  className="catalog-action-button rounded-xl border border-primary-400/70 bg-primary-100/72 px-4 py-2.5 text-center text-sm font-semibold text-primary-800"
                 >
                   View details
                 </Link>
                 <button
                   type="button"
                   onClick={() => addToCart(hero)}
-                  className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500"
+                  className="catalog-action-button rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-500"
                 >
                   Add to cart
                 </button>
@@ -460,7 +460,7 @@ function Home() {
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
-        <aside className="surface-card space-y-3 p-4 xl:sticky xl:top-28">
+        <aside className="surface-card space-y-3 p-4 sm:p-5 xl:sticky xl:top-28">
           <h2 className="text-xl font-semibold text-primary-900">Smart filters</h2>
           <input
             value={search}
@@ -549,7 +549,7 @@ function Home() {
         </aside>
 
         <div className="space-y-4">
-          <div className="surface-card flex flex-wrap items-center justify-between gap-2 p-4">
+          <div className="surface-card flex flex-col items-start gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-primary-600">
               <span className="font-semibold text-primary-900">{visible.length}</span> products
               found
@@ -568,7 +568,7 @@ function Home() {
 
           {compareProducts.length > 0 && (
             <section id="compare-panel" className="surface-card p-4">
-              <div className="mb-2 flex items-center justify-between">
+              <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <h3 className="font-semibold text-primary-900">Comparison</h3>
                 <button
                   type="button"
@@ -606,7 +606,7 @@ function Home() {
                 </p>
               ) : (
                 <div className="mt-4 overflow-x-auto rounded-xl border border-primary-300/70">
-                  <table className="min-w-[720px] w-full text-sm">
+                  <table className="w-full min-w-[640px] text-sm sm:min-w-[720px]">
                     <thead className="bg-primary-100/75">
                       <tr>
                         <th className="px-3 py-2 text-left font-semibold text-primary-900">
@@ -693,7 +693,7 @@ function Home() {
                       {getCompatibilityTags(product).join(" | ")}
                     </p>
 
-                    <div className="mt-3 flex items-end justify-between">
+                    <div className="mt-3 flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between">
                       <p className="text-xl font-bold text-primary-900">
                         {formatCurrency(Number(product.price))}
                       </p>

@@ -22,7 +22,7 @@ function Register() {
       persistSession(response);
       showSuccessMessage({
         title: "Registration successful",
-        message: `Welcome, ${getUserDisplayName(response.user)}!`,
+        message: `Welcome: ${getUserDisplayName(response.user)}!`,
         tone: "success",
       });
       navigate("/");
@@ -45,12 +45,12 @@ function Register() {
   }
 
   return (
-    <section className="mx-auto grid max-w-5xl gap-5 lg:grid-cols-12">
-      <article className="surface-card p-6 lg:col-span-5">
+    <section className="mx-auto grid max-w-5xl gap-4 sm:gap-5 lg:grid-cols-12">
+      <article className="surface-card p-5 sm:p-6 lg:col-span-5">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-700">
           Create account
         </p>
-        <h1 className="mt-2 font-sans text-4xl font-semibold tracking-[0.04em] text-primary-900">
+        <h1 className="mt-2 font-sans text-3xl font-semibold tracking-[0.04em] text-primary-900 sm:text-4xl">
           Join {BRAND_NAME}
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-primary-600">
@@ -69,7 +69,7 @@ function Register() {
         </div>
       </article>
 
-      <article className="surface-card p-6 lg:col-span-7">
+      <article className="surface-card p-5 sm:p-6 lg:col-span-7">
         <h2 className="text-2xl font-semibold text-primary-900">Register</h2>
         <p className="mt-1 text-sm text-primary-600">
           Create your competitive marketplace profile.
@@ -146,4 +146,3 @@ function Register() {
 }
 
 export default Register;
-

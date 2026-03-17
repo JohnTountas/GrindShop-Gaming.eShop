@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   FOOTER_MESSAGE_EVENT,
   FOOTER_MESSAGES,
+  POLICY_FOOTER_LINKS,
+  SUPPORT_FOOTER_LINKS,
   type FooterMessageKey,
 } from '../constants';
 
@@ -14,7 +16,22 @@ export function useFooterMessageDialog() {
   const [activeFooterMessage, setActiveFooterMessage] = useState<FooterMessageKey | null>(null);
 
   const activeMessage = useMemo(
-    () => (activeFooterMessage ? FOOTER_MESSAGES[activeFooterMessage] : null),
+    () => {
+      if (!activeFooterMessage) {
+        return null;
+      }
+
+      const section = SUPPORT_FOOTER_LINKS.some((item) => item.key === activeFooterMessage)
+        ? 'Support'
+        : POLICY_FOOTER_LINKS.some((item) => item.key === activeFooterMessage)
+          ? 'Policies'
+          : 'Information';
+
+      return {
+        section,
+        ...FOOTER_MESSAGES[activeFooterMessage],
+      };
+    },
     [activeFooterMessage]
   );
 

@@ -29,6 +29,7 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
@@ -58,6 +59,15 @@
   h3,
   h4 {
     @apply tracking-tight text-primary-900;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
   }
 
   ::selection {
@@ -221,6 +231,14 @@
   /* Balance multi-line headings in tight card layouts. */
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 }
 

@@ -101,7 +101,9 @@ function Wishlist() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-500">
               Wishlist
             </p>
-            <h1 className="mt-1 text-3xl font-semibold text-primary-900">Saved for later</h1>
+            <h1 className="mt-1 text-2xl font-semibold text-primary-900 sm:text-3xl">
+              Saved for later
+            </h1>
             <p className="mt-2 text-sm text-primary-600">
               This is your personal wishlist category. Only your account can see these products.
             </p>
@@ -127,7 +129,7 @@ function Wishlist() {
       )}
 
       {products.length === 0 ? (
-        <div className="surface-card p-10 text-center">
+        <div className="surface-card p-8 text-center sm:p-10">
           <h2 className="text-xl font-semibold text-primary-900">Your wishlist is empty</h2>
           <p className="mt-2 text-sm text-primary-600">
             Add products to wishlist from the catalog to keep track of what you want next.

@@ -71,7 +71,9 @@ function Orders() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-700">
               Control center
             </p>
-            <h1 className="mt-1 text-3xl font-semibold text-primary-900">Storefront Operations</h1>
+            <h1 className="mt-1 text-2xl font-semibold text-primary-900 sm:text-3xl">
+              Storefront Operations
+            </h1>
             <p className="mt-2 text-sm text-primary-600">
               Track every order, monitor status updates, and jump into order details from one
               dashboard.
@@ -79,7 +81,7 @@ function Orders() {
           </div>
           <Link
             to="/"
-            className="rounded-full border border-primary-300/70 bg-primary-100/72 px-4 py-2 text-sm font-semibold text-primary-800 hover:-translate-y-0.5 hover:border-accent-700 hover:text-primary-900"
+            className="w-full rounded-full border border-primary-300/70 bg-primary-100/72 px-4 py-2.5 text-center text-sm font-semibold text-primary-800 hover:-translate-y-0.5 hover:border-accent-700 hover:text-primary-900 sm:w-auto"
           >
             Continue shopping
           </Link>
@@ -120,7 +122,7 @@ function Orders() {
       )}
 
       {orders.length === 0 ? (
-        <div className="surface-card p-10 text-center">
+        <div className="surface-card p-8 text-center sm:p-10">
           <h2 className="text-xl font-semibold text-primary-900">No orders yet</h2>
           <p className="mt-2 text-sm text-primary-600">
             Start your first order from the catalog to see status tracking and order details here.
@@ -174,7 +176,7 @@ function Orders() {
                       </p>
                     </div>
 
-                    <div className="text-right">
+                    <div className="w-full text-left sm:w-auto sm:text-right">
                       <p
                         className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${ORDER_STATUS_STYLES[order.status]}`}
                       >
@@ -186,16 +188,16 @@ function Orders() {
                     </div>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap sm:items-center">
                     <Link
                       to={`/orders/${order.id}`}
-                      className="inline-flex rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-900"
+                      className="inline-flex justify-center rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-900"
                     >
                       View details
                     </Link>
                     <Link
                       to="/"
-                      className="inline-flex rounded-xl border border-primary-300/70 bg-primary-100/72 px-4 py-2.5 text-sm font-semibold text-primary-800 hover:border-accent-700 hover:text-primary-900"
+                      className="inline-flex justify-center rounded-xl border border-primary-300/70 bg-primary-100/72 px-4 py-2.5 text-sm font-semibold text-primary-800 hover:border-accent-700 hover:text-primary-900"
                     >
                       Shop again
                     </Link>

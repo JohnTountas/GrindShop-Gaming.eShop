@@ -9,7 +9,7 @@ interface FooterLinkSectionProps {
 // Renders one footer column of policy/support actions that open shared modal content.
 function FooterLinkSection({ title, items, onOpen }: FooterLinkSectionProps) {
   return (
-    <section className="text-center">
+    <section className="text-center md:text-left">
       <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-primary-700">
         {title}
       </h2>

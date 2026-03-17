@@ -62,8 +62,10 @@ export function PaymentMethodFields({
           label="Card number"
           autoComplete="cc-number"
           inputMode="numeric"
-          maxLength={23}
-          placeholder="1234 5678 9012 3456"
+          pattern="[0-9]*"
+          maxLength={19}
+          placeholder="1234567890123456"
+          helperText="Enter digits only, without spaces or dashes."
           value={cardDetails.number}
           onChange={(event) => onCardNumberChange(event.target.value)}
           required
@@ -95,9 +97,11 @@ export function PaymentMethodFields({
           label="Security code"
           autoComplete="cc-csc"
           inputMode="numeric"
+          pattern="[0-9]*"
           type="password"
           maxLength={4}
-          placeholder="CVV"
+          placeholder="e.g. 123"
+          helperText="Enter the 3 or 4 digits shown on your card."
           value={cardDetails.cvv}
           onChange={(event) => onCardCvvChange(event.target.value)}
           required

@@ -4,72 +4,76 @@
  * It keeps form state, payment validation, cache updates, and post-purchase
  * navigation in one place so the page component can stay mostly declarative.
  */
-import { useQueryClient } from '@tanstack/react-query';
-import { FormEvent, MouseEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { cartKey } from '@/features/cart/queryKeys';
-import { orderDetailKey, ordersKey } from '@/features/orders/queryKeys';
-import { persistGuestOrder } from '@/features/orders/utils/guestOrderStorage';
-import { clearGuestCart } from '@/shared/cart/guestCart';
-import { storefrontStateKey, wishlistProductsKey } from '@/shared/storefront/queryKeys';
-import type { StorefrontState } from '@/shared/storefront/types';
-import type { Cart, CartItem, Order, Product, ShippingAddress } from '@/shared/types';
-import { showSuccessMessage } from '@/shared/ui/toast';
-import { FOOTER_MESSAGE_EVENT, PAYMENT_OPTIONS } from '../constants';
-import type { CardPaymentDetails, PaymentMethod } from '../types';
-import { buildPaymentIntentId } from '../utils/buildPaymentIntentId';
-import { digitsOnly, formatCardExpiry, formatCardNumber } from '../utils/formatters';
+import { useQueryClient } from "@tanstack/react-query";
+import { FormEvent, MouseEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { cartKey } from "@/features/cart/queryKeys";
+import { orderDetailKey, ordersKey } from "@/features/orders/queryKeys";
+import { persistGuestOrder } from "@/features/orders/utils/guestOrderStorage";
+import { clearGuestCart } from "@/shared/cart/guestCart";
+import { storefrontStateKey, wishlistProductsKey } from "@/shared/storefront/queryKeys";
+import type { StorefrontState } from "@/shared/storefront/types";
+import type { Cart, CartItem, Order, Product, ShippingAddress } from "@/shared/types";
+import { showSuccessMessage } from "@/shared/ui/toast";
+import { FOOTER_MESSAGE_EVENT, PAYMENT_OPTIONS } from "../constants";
+import type { CardPaymentDetails, PaymentMethod } from "../types";
+import { buildPaymentIntentId } from "../utils/buildPaymentIntentId";
+import { digitsOnly, formatCardExpiry } from "../utils/formatters";
 import {
   buildPaymentPreview,
   calculateCheckoutTotals,
   getPaymentFingerprintSource,
   isShippingAddressComplete,
-} from '../utils/checkoutCalculations';
-import { isValidCardNumber, isValidEmail, isValidExpiry } from '../utils/validators';
-import { useCreateOrder } from './useCreateOrder';
+} from "../utils/checkoutCalculations";
+import { isValidCardNumber, isValidEmail, isValidExpiry } from "../utils/validators";
+import { useCreateOrder } from "./useCreateOrder";
 
 const INITIAL_SHIPPING_ADDRESS: ShippingAddress = {
-  fullName: '',
-  address: '',
-  city: '',
-  state: '',
-  zipCode: '',
-  country: '',
-  phone: '',
+  fullName: "",
+  address: "",
+  city: "",
+  state: "",
+  zipCode: "",
+  country: "",
+  phone: "",
 };
 
 const INITIAL_CARD_DETAILS: CardPaymentDetails = {
-  holderName: '',
-  number: '',
-  expiry: '',
-  cvv: '',
+  holderName: "",
+  number: "",
+  expiry: "",
+  cvv: "",
 };
 
 const INPUT_BASE_CLASS =
-  'mt-1.5 block w-full rounded-xl border px-3 py-2.5 text-sm text-primary-900 focus:outline-none';
+  "mt-1.5 block w-full rounded-xl border px-3 py-2.5 text-sm text-primary-900 focus:outline-none";
 const INPUT_DEFAULT_CLASS =
-  'border-primary-300/70 bg-primary-100/72 placeholder:text-primary-600 focus:border-accent-700';
+  "border-primary-300/70 bg-primary-100/72 placeholder:text-primary-600 focus:border-accent-700";
 const INPUT_MISSING_CLASS =
-  'border-red-300 bg-red-50 placeholder:text-red-500 focus:border-red-500';
+  "border-red-300 bg-red-50 placeholder:text-red-500 focus:border-red-500";
 
 interface UseCheckoutFlowOptions {
   authed: boolean;
   items: CartItem[];
 }
 
-type CheckoutFooterMessage = 'termsOfService' | 'privacySecurity';
+type CheckoutFooterMessage = "termsOfService" | "privacySecurity";
+
+function isNumericShippingField(key: keyof ShippingAddress) {
+  return key === "zipCode" || key === "phone";
+}
 
 export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<ShippingAddress>(INITIAL_SHIPPING_ADDRESS);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('CARD');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("CARD");
   const [cardDetails, setCardDetails] = useState<CardPaymentDetails>(INITIAL_CARD_DETAILS);
-  const [walletEmail, setWalletEmail] = useState('');
-  const [bankTransferReference, setBankTransferReference] = useState('');
+  const [walletEmail, setWalletEmail] = useState("");
+  const [bankTransferReference, setBankTransferReference] = useState("");
   const [hasAuthorizedPayment, setHasAuthorizedPayment] = useState(false);
   const [hasAcceptedPolicies, setHasAcceptedPolicies] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const [showMissingFieldHints, setShowMissingFieldHints] = useState(false);
 
   const selectedPaymentOption =
@@ -95,18 +99,21 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
           };
         });
 
-        queryClient.setQueryData<StorefrontState | undefined>(storefrontStateKey, (currentState) => {
-          if (!currentState) {
-            return currentState;
-          }
+        queryClient.setQueryData<StorefrontState | undefined>(
+          storefrontStateKey,
+          (currentState) => {
+            if (!currentState) {
+              return currentState;
+            }
 
-          return {
-            ...currentState,
-            wishlistProductIds: currentState.wishlistProductIds.filter(
-              (productId) => !purchasedProductIds.has(productId)
-            ),
-          };
-        });
+            return {
+              ...currentState,
+              wishlistProductIds: currentState.wishlistProductIds.filter(
+                (productId) => !purchasedProductIds.has(productId)
+              ),
+            };
+          }
+        );
 
         queryClient.setQueryData<Product[] | undefined>(wishlistProductsKey, (currentProducts) => {
           if (!currentProducts) {
@@ -135,11 +142,11 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
       // The toast gives both guest and signed-in flows the same success language,
       // even though they branch to different destinations afterward.
       showSuccessMessage({
-        title: 'Order placed successfully',
+        title: "Order placed successfully",
         message: `Thank you for choosing GrindSpot. Your order is confirmed and our team is preparing it for fast dispatch. Payment authorized with ${selectedPaymentOption.label}.`,
-        tone: 'success',
-        placement: 'center',
-        durationMs: 8000,
+        tone: "success",
+        placement: "center",
+        durationMs: 9000,
       });
 
       if (!authed) {
@@ -149,7 +156,7 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
         return;
       }
 
-      navigate('/orders', {
+      navigate("/orders", {
         state: {
           highlightOrderId: order.id,
         },
@@ -171,52 +178,52 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
   });
 
   function clearValidationMessage() {
-    setErrorMessage('');
+    setErrorMessage("");
   }
 
   function validatePaymentStep() {
     // We validate in the same order the UI asks for input, so the first error
     // the customer sees is the next actionable thing to fix.
     if (!isShippingComplete) {
-      return 'Complete all shipping fields before payment confirmation.';
+      return "Please complete all shipping fields before payment confirmation.";
     }
 
     if (!hasAuthorizedPayment) {
-      return 'Authorize the payment amount to continue.';
+      return "You must authorize the payment amount to continue.";
     }
 
     if (!hasAcceptedPolicies) {
-      return 'Accept the Terms of Service and Privacy Policy to continue.';
+      return "You must accept the Terms of Service and Privacy Policy to continue.";
     }
 
-    if (selectedPaymentMethod === 'CARD') {
+    if (selectedPaymentMethod === "CARD") {
       if (!cardDetails.holderName.trim()) {
-        return 'Cardholder name is required.';
+        return "Cardholder name is required.";
       }
       if (!isValidCardNumber(cardDetails.number)) {
-        return 'Enter a valid card number.';
+        return "Enter a valid card number.";
       }
       if (!isValidExpiry(cardDetails.expiry)) {
-        return 'Enter a valid card expiry in MM/YY format.';
+        return "Enter a valid card expiry in MM/YY format.";
       }
       if (!/^\d{3,4}$/.test(cardDetails.cvv)) {
-        return 'Enter a valid card security code.';
+        return "Enter a valid card security code.";
       }
-      return '';
+      return "";
     }
 
-    if (selectedPaymentMethod === 'BANK_TRANSFER') {
+    if (selectedPaymentMethod === "BANK_TRANSFER") {
       if (bankTransferReference.trim().length < 6) {
-        return 'Bank transfer reference must be at least 6 characters.';
+        return "Bank transfer reference must be at least 6 characters.";
       }
-      return '';
+      return "";
     }
 
     if (!isValidEmail(walletEmail)) {
-      return 'Enter a valid wallet email address.';
+      return "Enter a valid wallet email address.";
     }
 
-    return '';
+    return "";
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -244,7 +251,7 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
 
     // Drop CVV from local React state as soon as the form is submitted. Even in
     // a demo app, we should not keep sensitive fields around longer than needed.
-    setCardDetails((current) => ({ ...current, cvv: '' }));
+    setCardDetails((current) => ({ ...current, cvv: "" }));
     createOrderMutation.mutate({
       shippingAddress: form,
       paymentIntentId,
@@ -259,7 +266,8 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
 
   function updateShippingField(key: keyof ShippingAddress, value: string) {
     clearValidationMessage();
-    setForm((current) => ({ ...current, [key]: value }));
+    const nextValue = isNumericShippingField(key) ? digitsOnly(value) : value;
+    setForm((current) => ({ ...current, [key]: nextValue }));
   }
 
   function updateCardField(key: keyof CardPaymentDetails, value: string) {
@@ -271,8 +279,8 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
     clearValidationMessage();
     setSelectedPaymentMethod(nextMethod);
 
-    if (nextMethod !== 'CARD') {
-      setCardDetails((current) => ({ ...current, cvv: '' }));
+    if (nextMethod !== "CARD") {
+      setCardDetails((current) => ({ ...current, cvv: "" }));
     }
   }
 
@@ -306,10 +314,7 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
     }`;
   }
 
-  function openFooterMessage(
-    event: MouseEvent<HTMLButtonElement>,
-    message: CheckoutFooterMessage
-  ) {
+  function openFooterMessage(event: MouseEvent<HTMLButtonElement>, message: CheckoutFooterMessage) {
     event.preventDefault();
     event.stopPropagation();
     window.dispatchEvent(
@@ -341,15 +346,15 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
     updateBankTransferReference,
     updateAuthorizedPayment,
     updateAcceptedPolicies,
-    updateCardHolderName: (value: string) => updateCardField('holderName', value),
-    updateCardNumber: (value: string) => updateCardField('number', formatCardNumber(value)),
-    updateCardExpiry: (value: string) => updateCardField('expiry', formatCardExpiry(value)),
-    updateCardCvv: (value: string) => updateCardField('cvv', digitsOnly(value).slice(0, 4)),
+    updateCardHolderName: (value: string) => updateCardField("holderName", value),
+    updateCardNumber: (value: string) => updateCardField("number", digitsOnly(value).slice(0, 19)),
+    updateCardExpiry: (value: string) => updateCardField("expiry", formatCardExpiry(value)),
+    updateCardCvv: (value: string) => updateCardField("cvv", digitsOnly(value).slice(0, 4)),
     isMissingValue,
     getInputClass,
     openTermsOfServiceMessage: (event: MouseEvent<HTMLButtonElement>) =>
-      openFooterMessage(event, 'termsOfService'),
+      openFooterMessage(event, "termsOfService"),
     openPrivacyPolicyMessage: (event: MouseEvent<HTMLButtonElement>) =>
-      openFooterMessage(event, 'privacySecurity'),
+      openFooterMessage(event, "privacySecurity"),
   };
 }

@@ -17,7 +17,10 @@ export function OrderItemsCard({ items }: OrderItemsCardProps) {
       </h2>
       <div className="mt-3 space-y-2">
         {items.slice(0, 4).map((item) => (
-          <div key={item.id} className="flex items-center justify-between gap-3 text-sm">
+          <div
+            key={item.id}
+            className="flex flex-col items-start gap-1 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3"
+          >
             <p className="line-clamp-1 text-primary-800">
               {item.quantity} x {item.product.title}
             </p>

@@ -95,7 +95,7 @@ export function ReviewsEditor({ productId, reviews, onStatusMessage }: ReviewsEd
         <button
           type="submit"
           disabled={createReviewMutation.isPending}
-          className="rounded-xl bg-primary-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          className="rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
         >
           Add review
         </button>
@@ -138,12 +138,12 @@ function ReviewRow({
         <input
           value={authorName}
           onChange={(event) => setAuthorName(event.target.value)}
-          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-1.5 text-xs text-primary-900"
+          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-2 text-sm text-primary-900 sm:text-xs"
         />
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-1.5 text-xs text-primary-900"
+          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-2 text-sm text-primary-900 sm:text-xs"
         />
         <input
           value={rating}
@@ -151,14 +151,14 @@ function ReviewRow({
           type="number"
           min={1}
           max={5}
-          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-1.5 text-xs text-primary-900"
+          className="rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-2 text-sm text-primary-900 sm:text-xs"
         />
       </div>
       <textarea
         value={comment}
         onChange={(event) => setComment(event.target.value)}
         rows={3}
-        className="mt-2 w-full rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-1.5 text-xs text-primary-900"
+        className="mt-2 w-full rounded-lg border border-primary-300/70 bg-primary-100/72 px-2 py-2 text-sm text-primary-900 sm:text-xs"
       />
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <label className="inline-flex items-center gap-2 text-xs text-primary-700">
@@ -181,14 +181,14 @@ function ReviewRow({
               verifiedPurchase,
             })
           }
-          className="rounded-lg bg-primary-800 px-3 py-1.5 text-xs font-semibold text-white"
+          className="rounded-lg bg-primary-800 px-3 py-2 text-xs font-semibold text-white"
         >
           Save
         </button>
         <button
           type="button"
           onClick={() => onDelete(review.id)}
-          className="rounded-lg border border-red-300/70 bg-red-900/20 px-3 py-1.5 text-xs font-semibold text-red-100"
+          className="rounded-lg border border-red-300/70 bg-red-900/20 px-3 py-2 text-xs font-semibold text-red-100"
         >
           Delete
         </button>

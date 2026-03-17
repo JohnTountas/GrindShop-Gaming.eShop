@@ -100,7 +100,9 @@ function Cart() {
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-500">
             Shopping cart
           </p>
-          <h1 className="mt-1 text-3xl font-semibold text-primary-900">Review your items</h1>
+          <h1 className="mt-1 text-2xl font-semibold text-primary-900 sm:text-3xl">
+            Review your items
+          </h1>
         </div>
         <p className="rounded-full border border-primary-300 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-black">
           {itemCount} items
@@ -128,7 +130,7 @@ function Cart() {
       )}
 
       {items.length === 0 ? (
-        <div className="surface-card p-10 text-center">
+        <div className="surface-card p-8 text-center sm:p-10">
           <h2 className="text-xl font-semibold text-primary-900">Your cart is empty</h2>
           <p className="mt-2 text-sm text-primary-600">
             Add products to your cart and return here to finalize checkout.
@@ -153,7 +155,7 @@ function Cart() {
               return (
                 <article
                   key={item.id}
-                  className="surface-card interactive-lift flex flex-wrap items-center gap-4 p-4 sm:p-5"
+                  className="surface-card interactive-lift flex flex-wrap items-start gap-4 p-4 sm:p-5"
                 >
                   <div className="product-image-frame h-16 w-16 rounded-xl bg-gradient-to-br from-primary-100 via-primary-50 to-accent-100">
                     {item.product.images[0] ? (
@@ -171,14 +173,14 @@ function Cart() {
                     )}
                   </div>
 
-                  <div className="min-w-[180px] flex-1">
+                  <div className="min-w-0 flex-1">
                     <h2 className="font-semibold text-primary-900">{item.product.title}</h2>
                     <p className="mt-1 text-sm text-primary-600">
                       {formatCurrency(Number(item.product.price))}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
                     <button
                       type="button"
                       onClick={() =>
@@ -187,7 +189,7 @@ function Cart() {
                           quantity: item.quantity - 1,
                         })
                       }
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-primary-200 bg-white text-sm font-semibold text-primary-800 hover:border-primary-500 hover:text-primary-900 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary-200 bg-white text-sm font-semibold text-primary-800 hover:border-primary-500 hover:text-primary-900 disabled:cursor-not-allowed disabled:opacity-60 sm:h-9 sm:w-9"
                       disabled={!canDecrease}
                       aria-label={`Decrease quantity for ${item.product.title}`}
                     >
@@ -204,7 +206,7 @@ function Cart() {
                           quantity: item.quantity + 1,
                         })
                       }
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-primary-200 bg-white text-sm font-semibold text-primary-800 hover:border-primary-500 hover:text-primary-900 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary-200 bg-white text-sm font-semibold text-primary-800 hover:border-primary-500 hover:text-primary-900 disabled:cursor-not-allowed disabled:opacity-60 sm:h-9 sm:w-9"
                       disabled={!canIncrease}
                       aria-label={`Increase quantity for ${item.product.title}`}
                     >
@@ -213,14 +215,14 @@ function Cart() {
                     <button
                       type="button"
                       onClick={() => removeItemMutation.mutate(item.id)}
-                      className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                       disabled={isBusy}
                     >
                       {isRemoving ? "Removing" : "Remove"}
                     </button>
                   </div>
 
-                  <p className="ml-auto text-sm font-semibold text-primary-900">
+                  <p className="w-full text-sm font-semibold text-primary-900 sm:ml-auto sm:w-auto sm:text-right">
                     {isUpdating ? "Updating..." : formatCurrency(itemTotal(item))}
                   </p>
                 </article>
@@ -231,22 +233,22 @@ function Cart() {
           <aside className="surface-card h-fit p-5 sm:p-6 lg:sticky lg:top-28 lg:col-span-4">
             <h2 className="text-xl font-semibold text-primary-900">Order summary</h2>
             <div className="mt-4 space-y-2 text-sm text-primary-700">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <p>Subtotal:</p>
                 <p className="font-semibold text-primary-900">{formatCurrency(subtotal)}</p>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <p>Estimated Shipping:</p>
                 <p className="font-semibold text-primary-900">{formatCurrency(shippingEstimate)}</p>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <p>Estimated Tax: 24%</p>
                 <p className="font-semibold text-primary-900">{formatCurrency(taxEstimate)}</p>
               </div>
             </div>
 
             <div className="mt-4 rounded-2xl border border-primary-100 bg-primary-50/80 p-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm font-semibold text-primary-700">Estimated total</p>
                 <p className="text-2xl font-bold text-primary-900">{formatCurrency(orderTotal)}</p>
               </div>

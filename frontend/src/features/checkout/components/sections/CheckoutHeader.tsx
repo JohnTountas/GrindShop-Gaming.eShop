@@ -21,7 +21,9 @@ export function CheckoutHeader({ isShippingComplete }: CheckoutHeaderProps) {
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-500">
         Secure checkout
       </p>
-      <h1 className="mt-1 text-3xl font-semibold text-primary-900">Shipping details</h1>
+      <h1 className="mt-1 text-2xl font-semibold text-primary-900 sm:text-3xl">
+        Shipping details
+      </h1>
       <p className="mt-2 text-sm text-primary-600">
         Enter delivery details, choose a payment method, and confirm authorization.
       </p>
